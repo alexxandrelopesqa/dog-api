@@ -195,7 +195,8 @@ Fluxo:
 4. Restore de historico Allure (se existir em `gh-pages/history`)
 5. `./mvnw allure:report`
 6. Upload de artefatos (`surefire`, `allure-results`, `allure HTML`)
-7. Publicacao no GitHub Pages (branch `main`)
+7. Upload do artefato de Pages com nome fixo `allure-pages`
+8. Publicacao no GitHub Pages (branch `main`)
 
 Hardening:
 - job `test` com permissao minima: `contents: read`
