@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "message",
+    "status",
+    "code"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "const": "error"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code": {
+      "type": "integer",
+      "const": 404
+    }
+  },
+  "additionalProperties": false
+}
