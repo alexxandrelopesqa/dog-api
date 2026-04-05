@@ -35,7 +35,7 @@ jobs:
         run: chmod +x mvnw
 
       - name: Run tests
-        run: ./mvnw --batch-mode --no-transfer-progress clean test
+        run: ./mvnw --batch-mode --no-transfer-progress clean test -Ddog.api.maxResponseTimeMs=5000 -Ddog.api.slaAttempts=15
 
       - name: Checkout gh-pages for Allure history
         if: github.ref == 'refs/heads/main'

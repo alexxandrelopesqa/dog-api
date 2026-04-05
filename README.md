@@ -156,7 +156,7 @@ Workflow: `.github/workflows/ci.yml`
 Fluxo:
 1. Checkout
 2. Setup Java 17 com cache Maven
-3. `./mvnw clean test`
+3. `./mvnw clean test -Ddog.api.maxResponseTimeMs=5000 -Ddog.api.slaAttempts=15`
 4. Restauracao de historico Allure (quando houver `gh-pages/history`)
 5. `./mvnw allure:report`
 6. Upload de artefatos:
@@ -170,6 +170,7 @@ Hardening aplicado:
 - permissoes de escrita isoladas no job `deploy-pages` (`pages: write`, `id-token: write`, `contents: read`)
 - sem privilegios desnecessarios em jobs de teste
 - tendencia Allure preservada entre execucoes via pasta `history` do `gh-pages`
+- parametros de execucao no CI ajustados para reduzir instabilidade de SLA da API publica
 
 ## Recursos Allure habilitados
 

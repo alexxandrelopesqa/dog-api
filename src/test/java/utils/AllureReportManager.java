@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public final class AllureReportManager {
@@ -31,12 +33,62 @@ public final class AllureReportManager {
             + "baseUrl=" + ConfigManager.getBaseUrl();
 
         String responseSummary = "statusCode=" + response.getStatusCode() + System.lineSeparator()
+            + "statusLine=" + response.getStatusLine() + System.lineSeparator()
             + "responseTimeMs=" + response.time() + System.lineSeparator()
+            + "contentType=" + response.getContentType() + System.lineSeparator()
             + "headers=" + response.getHeaders();
 
         Allure.addAttachment("Request Summary", "text/plain", requestSummary, ".txt");
         Allure.addAttachment("Response Summary", "text/plain", responseSummary, ".txt");
         Allure.addAttachment("Response Body", "application/json", response.asPrettyString(), ".json");
+    }
+
+    public static void attachRetryTimeline(String endpoint, List<Long> attemptsMs, long thresholdMs) {
+        StringBuilder timeline = new StringBuilder();
+        timeline.append("{").append(System.lineSeparator())
+            .append("  \"endpoint\": \"").append(endpoint).append("\",").append(System.lineSeparator())
+            .append("  \"thresholdMs\": ").append(thresholdMs).append(",").append(System.lineSeparator())
+            .append("  \"attempts\": [").append(System.lineSeparator());
+
+        for (int i = 0; i < attemptsMs.size(); i++) {
+            long duration = attemptsMs.get(i);
+            timeline.append("    {\"attempt\": ").append(i + 1)
+                .append(", \"durationMs\": ").append(duration)
+                .append(", \"withinThreshold\": ").append(duration < thresholdMs).append("}");
+            if (i < attemptsMs.size() - 1) {
+                timeline.append(",");
+            }
+            timeline.append(System.lineSeparator());
+        }
+
+        timeline.append("  ]").append(System.lineSeparator()).append("}");
+        Allure.addAttachment("SLA Retry Timeline", "application/json", timeline.toString(), ".json");
+    }
+
+    public static void attachAssertionContext(String assertionName, Object expected, Object actual) {
+        String context = "{"
+            + "\"assertion\":\"" + escapeJson(assertionName) + "\","
+            + "\"expected\":\"" + escapeJson(String.valueOf(expected)) + "\","
+            + "\"actual\":\"" + escapeJson(String.valueOf(actual)) + "\""
+            + "}";
+        Allure.addAttachment("Assertion Context", "application/json", context, ".json");
+    }
+
+    public static void attachExecutionContext(Map<String, String> values) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{").append(System.lineSeparator());
+        int index = 0;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            builder.append("  \"").append(escapeJson(entry.getKey())).append("\": \"")
+                .append(escapeJson(entry.getValue())).append("\"");
+            if (index < values.size() - 1) {
+                builder.append(",");
+            }
+            builder.append(System.lineSeparator());
+            index++;
+        }
+        builder.append("}");
+        Allure.addAttachment("Execution Context", "application/json", builder.toString(), ".json");
     }
 
     private static Path getResultsDirectory() {

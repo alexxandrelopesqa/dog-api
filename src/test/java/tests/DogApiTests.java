@@ -19,6 +19,10 @@ import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
 import io.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +55,8 @@ class DogApiTests {
     @DisplayName("GET /breeds/list/all deve retornar sucesso e contrato valido")
     @Description("Valida status code, schema, tempo de resposta e payload do endpoint de listagem completa de racas.")
     void shouldReturnAllBreedsSuccessfully() {
-        Response response = executeWithSlaRetry(dogApiClient::getAllBreeds);
+        registerTestContext("/breeds/list/all", "all-breeds");
+        Response response = executeWithSlaRetry("/breeds/list/all", dogApiClient::getAllBreeds);
 
         validateStatusCode(response, 200);
         validateResponseTime(response);
@@ -72,7 +77,10 @@ class DogApiTests {
         String expectedApiStatus,
         String expectedSchema
     ) {
-        Response response = executeWithSlaRetry(() -> dogApiClient.getBreedImages(breed));
+        registerTestContext("/breed/{breed}/images", "breed-images");
+        Allure.parameter("breed", breed);
+        Allure.parameter("expectedStatusCode", String.valueOf(expectedStatusCode));
+        Response response = executeWithSlaRetry("/breed/" + breed + "/images", () -> dogApiClient.getBreedImages(breed));
 
         validateStatusCode(response, expectedStatusCode);
         validateResponseTime(response);
@@ -93,7 +101,8 @@ class DogApiTests {
     @DisplayName("GET /breeds/image/random deve retornar uma imagem valida")
     @Description("Valida status code, schema, tempo de resposta e payload do endpoint de imagem aleatoria.")
     void shouldReturnRandomImageSuccessfully() {
-        Response response = executeWithSlaRetry(dogApiClient::getRandomImage);
+        registerTestContext("/breeds/image/random", "random-image");
+        Response response = executeWithSlaRetry("/breeds/image/random", dogApiClient::getRandomImage);
 
         validateStatusCode(response, 200);
         validateResponseTime(response);
@@ -110,12 +119,16 @@ class DogApiTests {
         );
     }
 
-    private Response executeWithSlaRetry(Supplier<Response> requestCall) {
+    private Response executeWithSlaRetry(String endpoint, Supplier<Response> requestCall) {
         Response response = null;
+        List<Long> attemptsMs = new ArrayList<>();
+        long thresholdMs = ConfigManager.getMaxResponseTimeMs();
 
         for (int attempt = 1; attempt <= MAX_SLA_ATTEMPTS; attempt++) {
             response = requestCall.get();
-            if (response.time() < ConfigManager.getMaxResponseTimeMs()) {
+            attemptsMs.add(response.time());
+            if (response.time() < thresholdMs) {
+                AllureReportManager.attachRetryTimeline(endpoint, attemptsMs, thresholdMs);
                 return response;
             }
 
@@ -130,23 +143,38 @@ class DogApiTests {
             }
         }
 
+        AllureReportManager.attachRetryTimeline(endpoint, attemptsMs, thresholdMs);
         return response;
     }
 
     private void validateStatusCode(Response response, int expectedStatusCode) {
-        Allure.step("Validar status code esperado: " + expectedStatusCode, () ->
-            assertThat("Status code invalido", response.getStatusCode(), equalTo(expectedStatusCode))
-        );
+        Allure.step("Validar status code esperado: " + expectedStatusCode, () -> {
+            try {
+                assertThat("Status code invalido", response.getStatusCode(), equalTo(expectedStatusCode));
+            } catch (AssertionError assertionError) {
+                AllureReportManager.attachAssertionContext("statusCode", expectedStatusCode, response.getStatusCode());
+                throw assertionError;
+            }
+        });
     }
 
     private void validateResponseTime(Response response) {
-        Allure.step("Validar tempo de resposta menor que SLA", () ->
-            assertThat(
-                "Tempo de resposta acima do limite",
-                response.time(),
-                lessThan(ConfigManager.getMaxResponseTimeMs())
-            )
-        );
+        Allure.step("Validar tempo de resposta menor que SLA", () -> {
+            try {
+                assertThat(
+                    "Tempo de resposta acima do limite",
+                    response.time(),
+                    lessThan(ConfigManager.getMaxResponseTimeMs())
+                );
+            } catch (AssertionError assertionError) {
+                AllureReportManager.attachAssertionContext(
+                    "responseTimeMs",
+                    "< " + ConfigManager.getMaxResponseTimeMs(),
+                    response.time()
+                );
+                throw assertionError;
+            }
+        });
     }
 
     private void validateJsonSchema(Response response, String schemaPath) {
@@ -156,9 +184,15 @@ class DogApiTests {
     }
 
     private void validatePayloadStatus(Response response, String expectedApiStatus) {
-        Allure.step("Validar payload status: " + expectedApiStatus, () ->
-            assertThat("Status do payload invalido", response.jsonPath().getString("status"), equalTo(expectedApiStatus))
-        );
+        Allure.step("Validar payload status: " + expectedApiStatus, () -> {
+            String actualStatus = response.jsonPath().getString("status");
+            try {
+                assertThat("Status do payload invalido", actualStatus, equalTo(expectedApiStatus));
+            } catch (AssertionError assertionError) {
+                AllureReportManager.attachAssertionContext("payload.status", expectedApiStatus, actualStatus);
+                throw assertionError;
+            }
+        });
     }
 
     private void validateSuccessfulBreedPayload(Response response, String breed) {
@@ -185,5 +219,23 @@ class DogApiTests {
             assertThat("URL da imagem deve existir", randomImageUrl, not(emptyOrNullString()));
             assertThat("URL da imagem random nao possui formato esperado", randomImageUrl, containsString("images.dog.ceo"));
         });
+    }
+
+    private void registerTestContext(String endpoint, String scenario) {
+        Allure.parameter("baseUrl", ConfigManager.getBaseUrl());
+        Allure.parameter("endpoint", endpoint);
+        Allure.parameter("scenario", scenario);
+        Allure.parameter("maxResponseTimeMs", String.valueOf(ConfigManager.getMaxResponseTimeMs()));
+        Allure.parameter("slaAttempts", String.valueOf(MAX_SLA_ATTEMPTS));
+        Allure.parameter("slaBackoffMs", String.valueOf(RETRY_BACKOFF_MS));
+
+        Map<String, String> executionContext = new LinkedHashMap<>();
+        executionContext.put("baseUrl", ConfigManager.getBaseUrl());
+        executionContext.put("endpoint", endpoint);
+        executionContext.put("scenario", scenario);
+        executionContext.put("maxResponseTimeMs", String.valueOf(ConfigManager.getMaxResponseTimeMs()));
+        executionContext.put("slaAttempts", String.valueOf(MAX_SLA_ATTEMPTS));
+        executionContext.put("slaBackoffMs", String.valueOf(RETRY_BACKOFF_MS));
+        AllureReportManager.attachExecutionContext(executionContext);
     }
 }
