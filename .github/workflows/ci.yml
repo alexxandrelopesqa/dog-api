@@ -104,8 +104,31 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Check if GitHub Pages is enabled
+        id: pages_check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          status_code=$(curl -s -o /tmp/pages.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          if [ "${status_code}" = "200" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "GitHub Pages is enabled for this repository."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GitHub Pages is not enabled. Enable it in Settings > Pages to publish the Allure report."
+          fi
+
       - name: Deploy to GitHub Pages
         id: deployment
+        if: steps.pages_check.outputs.enabled == 'true'
         uses: actions/deploy-pages@v5
         with:
           artifact_name: allure-pages
+
+      - name: Skip deploy when GitHub Pages is disabled
+        if: steps.pages_check.outputs.enabled != 'true'
+        run: echo "Skipping GitHub Pages deployment because Pages is disabled."

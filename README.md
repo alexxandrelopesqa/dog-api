@@ -233,6 +233,7 @@ Pipeline minima:
 - **GitHub Pages nao publica**
   - conferir `Settings > Pages > Source = GitHub Actions`
   - validar se o job `deploy-pages` executou com sucesso
+  - se aparecer erro `Failed to create deployment (404)`, habilite o Pages no repositorio e execute o workflow novamente
 
 ## Checklist de validacao final
 
