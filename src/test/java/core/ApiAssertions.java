@@ -1,0 +1,112 @@
+package core;
+
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import io.qameta.allure.Allure;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import org.junit.jupiter.api.Assertions;
+
+public final class ApiAssertions {
+
+    private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("^https?://.+\\.(jpg|jpeg|png|webp)$", Pattern.CASE_INSENSITIVE);
+
+    private ApiAssertions() {
+    }
+
+    public static void assertHttpAndContentType(Response response, int expectedHttpStatus) {
+        Allure.step("Validar status HTTP e content type", () -> {
+            assertEqualsWithContext("statusCode", expectedHttpStatus, response.getStatusCode());
+            String contentType = response.getContentType();
+            assertNotNull(contentType, "Content-Type nao deve ser nulo");
+            assertTrue(contentType.toLowerCase().contains("application/json"), "Content-Type deve conter application/json");
+        });
+    }
+
+    public static void assertResponseTime(Response response) {
+        Allure.step("Validar SLA de tempo de resposta", () ->
+            assertTrue(
+                response.time() <= ConfigManager.maxResponseTimeMs(),
+                "Tempo de resposta acima do limite configurado: " + response.time() + "ms"
+            )
+        );
+    }
+
+    public static void assertSchema(Response response, String schemaPath) {
+        Allure.step("Validar schema JSON: " + schemaPath, () ->
+            response.then().body(matchesJsonSchemaInClasspath(schemaPath))
+        );
+    }
+
+    public static void assertMandatoryKeys(Response response, String expectedStatus) {
+        Allure.step("Validar chaves obrigatorias do payload", () -> {
+            JsonPath jsonPath = response.jsonPath();
+            Map<String, Object> map = jsonPath.getMap("$");
+            assertNotNull(map, "Payload nao deve ser nulo");
+            assertTrue(map.containsKey("status"), "Payload deve conter chave 'status'");
+            assertTrue(map.containsKey("message"), "Payload deve conter chave 'message'");
+            assertEqualsWithContext("payload.status", expectedStatus, jsonPath.getString("status"));
+            assertNotNull(jsonPath.get("message"), "Campo 'message' nao deve ser nulo");
+        });
+    }
+
+    public static void assertBreedsListStructure(Response response) {
+        Allure.step("Validar estrutura do mapa de racas/sub-racas", () -> {
+            Map<String, List<String>> breeds = response.jsonPath().getMap("message");
+            assertNotNull(breeds, "Campo message deve ser um mapa");
+            assertFalse(breeds.isEmpty(), "Mapa de racas nao deve estar vazio");
+            assertTrue(breeds.containsKey("hound"), "Mapa deve conter a raca 'hound'");
+            for (Map.Entry<String, List<String>> entry : breeds.entrySet()) {
+                assertNotNull(entry.getKey(), "Nome da raca nao pode ser nulo");
+                assertNotNull(entry.getValue(), "Lista de sub-racas nao pode ser nula");
+            }
+        });
+    }
+
+    public static void assertBreedImagesStructure(Response response, String breed) {
+        Allure.step("Validar lista de URLs da raca: " + breed, () -> {
+            List<String> images = response.jsonPath().getList("message");
+            assertNotNull(images, "Lista de imagens nao pode ser nula");
+            assertFalse(images.isEmpty(), "Lista de imagens nao pode estar vazia");
+            String firstImage = images.get(0);
+            assertTrue(firstImage.contains(breed), "URL deve conter nome da raca consultada");
+            assertTrue(IMAGE_URL_PATTERN.matcher(firstImage).matches(), "URL da imagem deve ter formato valido");
+        });
+    }
+
+    public static void assertRandomImageStructure(Response response) {
+        Allure.step("Validar URL retornada para imagem random", () -> {
+            String imageUrl = response.jsonPath().getString("message");
+            assertNotNull(imageUrl, "Campo message nao deve ser nulo");
+            assertTrue(imageUrl.contains("images.dog.ceo"), "URL da imagem deve apontar para CDN esperada");
+            assertTrue(IMAGE_URL_PATTERN.matcher(imageUrl).matches(), "URL da imagem deve ter formato valido");
+        });
+    }
+
+    public static void assertErrorMessage(Response response, String expectedMessageFragment) {
+        Allure.step("Validar mensagem de erro coerente", () -> {
+            String message = response.jsonPath().getString("message");
+            assertNotNull(message, "Mensagem de erro nao deve ser nula");
+            assertFalse(message.isBlank(), "Mensagem de erro nao deve ser vazia");
+            assertTrue(
+                message.toLowerCase().contains(expectedMessageFragment.toLowerCase()),
+                "Mensagem de erro deve mencionar '" + expectedMessageFragment + "'"
+            );
+        });
+    }
+
+    private static void assertEqualsWithContext(String field, Object expected, Object actual) {
+        try {
+            Assertions.assertEquals(expected, actual, "Valor invalido para " + field);
+        } catch (AssertionError error) {
+            AllureReportManager.attachAssertionContext(field, expected, actual);
+            throw error;
+        }
+    }
+}

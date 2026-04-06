@@ -1,4 +1,4 @@
-package utils;
+package core;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -12,7 +12,7 @@ public final class RequestSpecFactory {
 
     public static RequestSpecification defaultSpec() {
         return new RequestSpecBuilder()
-            .setBaseUri(ConfigManager.getBaseUrl())
+            .setBaseUri(ConfigManager.baseUrl())
             .setAccept("application/json")
             .setContentType("application/json")
             .log(LogDetail.URI)

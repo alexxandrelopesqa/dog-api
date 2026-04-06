@@ -1,0 +1,157 @@
+name: Dog API QA Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: API tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Java 17 with Maven cache
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Grant execute permission for Maven Wrapper
+        if: runner.os != 'Windows'
+        run: chmod +x mvnw
+
+      - name: Execute API test suite (Windows)
+        if: runner.os == 'Windows'
+        run: .\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
+
+      - name: Execute API test suite (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: ./mvnw --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: surefire-reports-${{ matrix.os }}
+          path: target/surefire-reports
+          if-no-files-found: warn
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: allure-results-${{ matrix.os }}
+          path: target/allure-results
+          if-no-files-found: warn
+
+  allure-aggregate:
+    name: Aggregate Allure report
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Java 17 with Maven cache
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Grant execute permission for Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Download Allure results artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: allure-results-ubuntu-latest
+          path: target/allure-results
+
+      - name: Checkout gh-pages branch for history
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        continue-on-error: true
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Restore Allure history from Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          if [ -d "gh-pages/history" ]; then
+            mkdir -p target/allure-results/history
+            cp -R gh-pages/history/. target/allure-results/history/
+          fi
+
+      - name: Generate consolidated Allure HTML
+        run: ./mvnw --batch-mode --no-transfer-progress allure:report
+
+      - name: Build GitHub Pages structure
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          mkdir -p public
+          if [ -d "gh-pages/runs" ]; then
+            mkdir -p public/runs
+            cp -R gh-pages/runs/. public/runs/
+          fi
+          cp -R target/site/allure-maven-plugin/. public/
+          mkdir -p public/runs/${{ github.run_number }}
+          cp -R target/site/allure-maven-plugin/. public/runs/${{ github.run_number }}/
+          if [ -d "target/site/allure-maven-plugin/history" ]; then
+            mkdir -p public/history
+            cp -R target/site/allure-maven-plugin/history/. public/history/
+          fi
+
+      - name: Upload aggregated Allure HTML artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: allure-report-html
+          path: target/site/allure-maven-plugin
+          if-no-files-found: warn
+
+      - name: Upload GitHub Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: public
+
+  deploy-pages:
+    name: Publish report on GitHub Pages
+    needs: allure-aggregate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+
+      - name: Deploy GitHub Pages artifact
+        id: deploy
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
