@@ -19,7 +19,7 @@
         <restassured.version>5.4.0</restassured.version>
         <allure.version>2.25.0</allure.version>
         <allure.maven.version>2.12.0</allure.maven.version>
-        <maven.surefire.version>3.2.5</maven.surefire.version>
+        <maven.surefire.version>3.5.5</maven.surefire.version>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
         <jackson.version>2.17.1</jackson.version>
         <test.tags></test.tags>
