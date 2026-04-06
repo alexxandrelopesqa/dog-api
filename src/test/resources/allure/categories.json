@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Falha de contrato",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*schema.*|.*JSON.*|.*contrato.*"
+  },
+  {
+    "name": "Timeout",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*timed out.*|.*Timeout.*|.*Read timed out.*"
+  },
+  {
+    "name": "Falha de rede",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*ConnectException.*|.*UnknownHostException.*|.*Connection reset.*"
+  },
+  {
+    "name": "Falha de assercao",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*AssertionFailedError.*|.*expected.*but was.*"
+  },
+  {
+    "name": "Falha de infraestrutura",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*IllegalStateException.*|.*NoSuchFileException.*|.*IOException.*"
+  }
+]

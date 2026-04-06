@@ -1,51 +1,53 @@
-package clients;
+package client;
 
+import core.AllureReportManager;
+import core.RequestSpecFactory;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import utils.AllureReportManager;
-import utils.RequestSpecFactory;
 
 public class DogApiClient {
 
-    private final RequestSpecification requestSpecification;
+    private final RequestSpecification specification = RequestSpecFactory.defaultSpec();
 
     public DogApiClient() {
-        this.requestSpecification = RequestSpecFactory.defaultSpec();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     public Response getAllBreeds() {
-        Response response = RestAssured.given(requestSpecification)
+        String endpoint = "/breeds/list/all";
+        Response response = RestAssured.given(specification)
             .when()
-            .get("/breeds/list/all")
+            .get(endpoint)
             .then()
             .extract()
             .response();
-        AllureReportManager.attachApiCall("GET", "/breeds/list/all", response);
+        AllureReportManager.attachRequestResponse("GET", endpoint, response);
         return response;
     }
 
     public Response getBreedImages(String breed) {
-        Response response = RestAssured.given(requestSpecification)
+        String endpoint = "/breed/" + breed + "/images";
+        Response response = RestAssured.given(specification)
             .pathParam("breed", breed)
             .when()
             .get("/breed/{breed}/images")
             .then()
             .extract()
             .response();
-        AllureReportManager.attachApiCall("GET", "/breed/" + breed + "/images", response);
+        AllureReportManager.attachRequestResponse("GET", endpoint, response);
         return response;
     }
 
     public Response getRandomImage() {
-        Response response = RestAssured.given(requestSpecification)
+        String endpoint = "/breeds/image/random";
+        Response response = RestAssured.given(specification)
             .when()
-            .get("/breeds/image/random")
+            .get(endpoint)
             .then()
             .extract()
             .response();
-        AllureReportManager.attachApiCall("GET", "/breeds/image/random", response);
+        AllureReportManager.attachRequestResponse("GET", endpoint, response);
         return response;
     }
 }
