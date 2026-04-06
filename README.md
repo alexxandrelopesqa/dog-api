@@ -1,232 +1,164 @@
-# Dog API - QA Automation Engineering Challenge
+# Dog API - QA API Automation
 
-Repositório completo para avaliação técnica de QA API com foco em engenharia de qualidade, rastreabilidade e CI/CD.
+Projeto de testes automatizados para o desafio da [Dog API](https://dog.ceo/dog-api/documentation), com foco em validação de contrato, comportamento funcional e rastreabilidade de execução.
 
-API alvo: [Dog API](https://dog.ceo/dog-api/documentation)  
-Base URL: `https://dog.ceo/api`
+Base URL usada nos testes: `https://dog.ceo/api`
 
 ![CI](https://github.com/alexxandrelopesqa/dog-api/actions/workflows/api-tests.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-17-blue)
-![Build](https://img.shields.io/badge/Maven-Wrapper-informational)
 
-## 1) Visão geral do desafio e objetivo
+## O que foi coberto
 
-Esta suíte valida 3 endpoints críticos da Dog API cobrindo:
-- cenários positivos (funcional + contrato)
-- cenários negativos/robustez (raça inválida e validação defensiva de payload)
-- estabilidade com retries controlados apenas para falhas transitórias
-- rastreabilidade operacional via Allure (steps, labels, anexos e metadados de execução)
+Endpoints obrigatórios:
 
-## 2) Stack utilizada e justificativas
+- `GET /breeds/list/all`
+- `GET /breed/{breed}/images`
+- `GET /breeds/image/random`
 
-- `Java 17`: LTS, estabilidade e ampla adoção corporativa.
-- `Maven + Maven Wrapper`: build reproduzível em qualquer sistema sem dependência de Maven global.
-- `JUnit 5`: organização moderna de testes e execução robusta.
-- `Rest Assured`: padrão de mercado para testes de API em Java.
-- `Allure Report`: excelente visibilidade de evidências para troubleshooting.
-- `GitHub Actions + Pages`: pipeline CI/CD com publicação contínua do relatório.
-- `Docker` (opcional): execução padronizada em ambiente isolado.
+Validações implementadas:
 
-## 3) Pré-requisitos
+- status HTTP esperado
+- content type JSON
+- chaves obrigatórias do payload (`status`, `message`)
+- schema validation
+- cenários positivos e negativos
+- retry apenas para falhas transitórias (`429`, `5xx` e exceções de rede)
 
-- Java 17+ (`java -version`)
-- Git
-- Acesso à internet para consumir `https://dog.ceo/api`
+## Stack
+
+- Java 17
+- Maven + Maven Wrapper
+- JUnit 5
+- Rest Assured
+- Allure Report
+- GitHub Actions + GitHub Pages
 - Docker (opcional)
 
-## 4) Setup local (Windows / Linux / macOS)
+## Pré-requisitos
 
-```bash
-git clone <url-do-repo>
-cd dog-api
-```
+- Java 17+
+- Git
+- acesso à internet para a API pública
 
-O projeto já inclui `mvnw` e `mvnw.cmd`.
+## Como rodar localmente
 
-## 5) Como executar os testes
+### Suite completa
 
-Suite completa:
+Windows:
 
-- Windows (PowerShell):
 ```powershell
 .\mvnw.cmd clean test
 ```
 
-- Linux/macOS:
+Linux/macOS:
+
 ```bash
 ./mvnw clean test
 ```
 
-Perfis de execução:
+### Perfis
 
-- `smoke` (cenários críticos rápidos):
+Smoke:
+
 ```bash
 ./mvnw clean test -Psmoke
 ```
 
-- `regression` (suíte completa funcional/negativa):
+Regression:
+
 ```bash
 ./mvnw clean test -Pregression
 ```
 
-Teste específico:
+### Teste isolado
 
-- Windows:
-```powershell
-.\mvnw.cmd -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test
-```
-
-- Linux/macOS:
 ```bash
 ./mvnw -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test
 ```
 
-## 6) Como gerar e abrir o Allure
+## Allure
 
-- Windows:
+Gerar relatório:
+
+Windows:
+
 ```powershell
 .\mvnw.cmd allure:report
 start .\target\site\allure-maven-plugin\index.html
 ```
 
-- Linux/macOS:
+Linux/macOS:
+
 ```bash
 ./mvnw allure:report
 xdg-open ./target/site/allure-maven-plugin/index.html
 ```
 
-Arquivos relevantes:
-- resultados brutos: `target/allure-results`
-- relatório HTML: `target/site/allure-maven-plugin`
-- metadados automáticos:
-  - `environment.properties`
-  - `executor.json`
-  - `categories.json`
+Arquivos úteis:
 
-## 7) Interpretação dos principais cenários cobertos
+- `target/allure-results`
+- `target/site/allure-maven-plugin`
+- `environment.properties`
+- `executor.json`
+- `categories.json`
 
-Cobertura obrigatória implementada:
+## Como o pipeline funciona
 
-1. `GET /breeds/list/all`
-   - HTTP 200
-   - `status=success`
-   - `message` como mapa de raças/sub-raças
-   - schema validation
+Arquivo: `.github/workflows/api-tests.yml`
 
-2. `GET /breed/{breed}/images` (raça existente)
-   - HTTP 200
-   - lista de URLs válidas
-   - schema validation
+- job de testes em matriz (`ubuntu`, `windows`, `macos`)
+- upload de artefatos (surefire + allure-results)
+- job agregador para gerar Allure consolidado
+- publicação no GitHub Pages
+- histórico preservado para tendência
+- snapshot por execução em `runs/<run_number>`
 
-3. `GET /breeds/image/random`
-   - HTTP 200
-   - URL válida de imagem
-   - schema validation
+URL esperada do Pages:
 
-4. Negativo: raça inexistente (`invalidbreed`)
-   - HTTP 404
-   - `status=error`
-   - mensagem coerente
-   - schema de erro
+- `https://alexxandrelopesqa.github.io/dog-api/`
 
-5. Validação defensiva de payload
-   - chaves obrigatórias (`status`, `message`)
-   - tipos esperados
-   - asserts explícitos para evitar falso-positivo
+## Jenkins
 
-## 8) Troubleshooting comum
+O repositório também possui `Jenkinsfile` para execução em pipeline declarativa.
 
-- Timeout/latência da API pública:
-```bash
-./mvnw clean test -Ddog.api.maxResponseTimeMs=5000
-```
+Fluxo no Jenkins:
 
-- Ajustar retries transitórios:
-```bash
-./mvnw clean test -Ddog.api.retryAttempts=5 -Ddog.api.retryBackoffMs=400
-```
+- checkout do repositório
+- execução da suite `regression` com Java 17
+- geração de relatório Allure em HTML (`allure:report`)
+- publicação de:
+  - `target/surefire-reports`
+  - `target/allure-results`
+  - `target/site/allure-maven-plugin`
 
-- Falha na geração Allure:
-```bash
-./mvnw clean test allure:report -e
-```
+Requisitos do agente Jenkins:
 
-- Pipeline sem publicar Pages:
-  - habilite GitHub Pages em `Settings > Pages` com source `GitHub Actions`
-  - execute novamente o workflow na branch `main`
+- JDK 17+
+- acesso à internet para baixar dependências Maven e consumir a Dog API
+- permissões de escrita no workspace (para `target/`)
 
-## 9) Como funciona o pipeline GitHub Actions
-
-Workflow: `.github/workflows/api-tests.yml`
-
-Fluxo:
-- **Job `test`**: matriz multi-OS (`ubuntu-latest`, `windows-latest`, `macos-latest`), setup Java 17, cache Maven, execução dos testes e upload de artifacts por sistema operacional.
-- **Job `allure-aggregate`**: baixa `allure-results`, restaura `history` do `gh-pages` (quando existir), gera relatório consolidado e monta estrutura de publicação:
-  - latest na raiz
-  - snapshot por execução em `runs/<run_number>`
-- **Job `deploy-pages`**: publica no GitHub Pages com permissões mínimas.
-
-Hardening aplicado:
-- actions pinadas por SHA
-- princípio de least privilege por job
-- sem uso de segredos hardcoded
-- Dependabot para Maven e GitHub Actions
-- `maven-enforcer-plugin` para garantir Java 17+ e Maven 3.9+
-
-## 10) Link esperado do GitHub Pages
-
-Após o primeiro deploy em `main`, o relatório ficará disponível em:
-
-- latest: `https://alexxandrelopesqa.github.io/dog-api/`
-- snapshot da execução: `https://alexxandrelopesqa.github.io/dog-api/runs/<run_number>/`
-
-## 11) Limitações conhecidas e próximos passos
-
-Limitações:
-- API pública pode apresentar variação de latência e intermitência.
-- Como o serviço é externo, não há controle sobre disponibilidade/SLAs reais.
-
-Próximos passos:
-- adicionar testes de contract-first com versionamento formal de schemas
-- incluir testes de carga leve (k6/Gatling) para diagnóstico complementar
-- integrar quality gates (ex.: SonarQube + cobertura mínima de assertions)
-- publicar badges de pipeline e qualidade no README
-
-## Estrutura do projeto
+## Estrutura
 
 ```text
 src/test/java/
   core/
-    AllureReportManager.java
-    ApiAssertions.java
-    BaseApiTest.java
-    ConfigManager.java
-    RequestSpecFactory.java
-    RetryExecutor.java
-    TestDataLoader.java
   client/
-    DogApiClient.java
   models/
-    ApiBaseResponse.java
-    BreedImagesResponse.java
-    BreedListResponse.java
-    RandomImageResponse.java
   tests/
-    DogApiNegativeTests.java
-    DogApiPositiveTests.java
 src/test/resources/
-  allure.properties
-  allure/
-    categories.json
   schemas/
-    breed-images-error-schema.json
-    breed-images-success-schema.json
-    breeds-list-all-schema.json
-    random-image-schema.json
+  allure/
   testdata/
-    breeds.json
-.github/
-  workflows/
-    api-tests.yml
-  dependabot.yml
+.github/workflows/
 ```
+
+## Limitações
+
+- Por ser API pública, pode ocorrer intermitência ocasional de rede/latência.
+- Os retries foram limitados para não mascarar falha real de contrato/funcional.
+
+## Próximos passos que eu faria
+
+- separar smoke para PR e regression completo no merge para `main`
+- incluir um teste de contrato versionado por endpoint
+- adicionar badge do Allure latest na documentação

@@ -21,18 +21,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("QA API Challenge")
-@Feature("Dog API - Cenarios negativos")
-@Owner("qa-automation")
+@Epic("Teste técnico QA API")
+@Feature("Dog API - cenários negativos")
+@Owner("alexxandrelopesqa")
 public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Buscar imagens por raca inexistente")
+    @Story("Raça inexistente")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Valida resposta de erro para raca inexistente no endpoint /breed/{breed}/images.")
-    @TmsLink("QA-API-004")
-    @DisplayName("Deve retornar status error para raca invalida")
+    @Description("Valida resposta de erro para raça inexistente em /breed/{breed}/images.")
+    @TmsLink("breed-list")
+    @DisplayName("Retorna status error para raça inválida")
     void shouldReturnErrorForInvalidBreed() {
         String invalidBreed = TestDataLoader.invalidBreed();
         String endpoint = "/breed/" + invalidBreed + "/images";
@@ -51,11 +51,11 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Validacao defensiva de payload")
+    @Story("Validação defensiva de payload")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Executa validacoes defensivas para garantir formato minimo de payload e tipos esperados.")
-    @TmsLink("QA-API-005")
-    @DisplayName("Deve validar estrutura defensiva com campos obrigatorios e tipos")
+    @Description("Executa validações defensivas para garantir formato mínimo e tipos esperados.")
+    @TmsLink("random")
+    @DisplayName("Valida estrutura defensiva com campos obrigatórios e tipos")
     void shouldValidatePayloadDefensively() {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("defensive-payload-validation", endpoint);
