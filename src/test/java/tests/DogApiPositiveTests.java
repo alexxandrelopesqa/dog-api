@@ -21,19 +21,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("QA API Challenge")
-@Feature("Dog API - Cenarios positivos")
-@Owner("qa-automation")
+@Epic("Teste técnico QA API")
+@Feature("Dog API - cenários positivos")
+@Owner("alexxandrelopesqa")
 public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Listar todas as racas")
+    @Story("Listagem de raças")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Valida contrato e estrutura do endpoint GET /breeds/list/all.")
-    @TmsLink("QA-API-001")
-    @DisplayName("Deve retornar mapa de racas e sub-racas com status success")
+    @Description("Confere status HTTP, contrato JSON e estrutura do payload de raças/sub-raças.")
+    @TmsLink("breed")
+    @DisplayName("Retorna mapa de raças com status success")
     void shouldReturnBreedsListWithExpectedStructure() {
         String endpoint = "/breeds/list/all";
         AllureReportManager.attachExecutionContext("positive-list-all-breeds", endpoint);
@@ -51,11 +51,11 @@ public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Buscar imagens por raca valida")
+    @Story("Imagens por raça válida")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Valida retorno de imagens para raca existente em GET /breed/{breed}/images.")
-    @TmsLink("QA-API-002")
-    @DisplayName("Deve retornar lista de URLs validas para raca existente")
+    @Description("Valida retorno de lista de imagens para uma raça existente.")
+    @TmsLink("breed-list")
+    @DisplayName("Retorna lista de URLs válidas para raça existente")
     void shouldReturnImagesForExistingBreed() {
         String breed = TestDataLoader.validBreed();
         String endpoint = "/breed/" + breed + "/images";
@@ -75,11 +75,11 @@ public class DogApiPositiveTests extends BaseApiTest {
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Buscar imagem aleatoria")
+    @Story("Imagem aleatória")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Valida estrutura de URL retornada pelo endpoint GET /breeds/image/random.")
-    @TmsLink("QA-API-003")
-    @DisplayName("Deve retornar uma URL valida ao solicitar imagem randomica")
+    @Description("Confere se o endpoint random entrega uma URL de imagem válida.")
+    @TmsLink("random")
+    @DisplayName("Retorna URL válida ao solicitar imagem randômica")
     void shouldReturnValidRandomImage() {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("positive-random-image", endpoint);
