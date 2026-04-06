@@ -21,7 +21,7 @@
         <allure.maven.version>2.12.0</allure.maven.version>
         <maven.surefire.version>3.2.5</maven.surefire.version>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
-        <jackson.version>2.17.1</jackson.version>
+        <jackson.version>2.21.2</jackson.version>
         <test.tags></test.tags>
     </properties>
 
