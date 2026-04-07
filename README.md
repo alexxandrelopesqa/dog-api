@@ -175,7 +175,7 @@ Workflow: `.github/workflows/api-tests.yml`
 
 Fluxo:
 
-1. Job de testes em matriz (`ubuntu`, `windows`, `macos`)
+1. Job de testes em matriz (`ubuntu`, `windows`, `macos`); no Windows o workflow usa `mvnw.cmd --%` para o PowerShell não engolir `-Pregression` e os `-D…`.
 2. Upload de `surefire-reports` e `allure-results`
 3. Job agregador para relatório Allure consolidado
 4. Push do site estático para a branch `gh-pages` (mantém `history/` entre execuções e snapshots em `runs/<run_number>`)
