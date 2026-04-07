@@ -21,7 +21,7 @@ public final class ApiAssertions {
     }
 
     public static void assertHttpAndContentType(Response response, int expectedHttpStatus) {
-        Allure.step("Validar status HTTP e content type", () -> {
+        Allure.step("Status HTTP e Content-Type", () -> {
             assertEqualsWithContext("statusCode", expectedHttpStatus, response.getStatusCode());
             String contentType = response.getContentType();
             assertNotNull(contentType, "Content-Type nao deve ser nulo");
@@ -30,7 +30,7 @@ public final class ApiAssertions {
     }
 
     public static void assertResponseTime(Response response) {
-        Allure.step("Validar SLA de tempo de resposta", () ->
+        Allure.step("Tempo de resposta dentro do limite", () ->
             assertTrue(
                 response.time() <= ConfigManager.maxResponseTimeMs(),
                 "Tempo de resposta acima do limite configurado: " + response.time() + "ms"
@@ -39,13 +39,13 @@ public final class ApiAssertions {
     }
 
     public static void assertSchema(Response response, String schemaPath) {
-        Allure.step("Validar schema JSON: " + schemaPath, () ->
+        Allure.step("Schema " + schemaPath, () ->
             response.then().body(matchesJsonSchemaInClasspath(schemaPath))
         );
     }
 
     public static void assertMandatoryKeys(Response response, String expectedStatus) {
-        Allure.step("Validar chaves obrigatorias do payload", () -> {
+        Allure.step("Chaves status e message", () -> {
             JsonPath jsonPath = response.jsonPath();
             Map<String, Object> map = jsonPath.getMap("$");
             assertNotNull(map, "Payload nao deve ser nulo");
@@ -57,7 +57,7 @@ public final class ApiAssertions {
     }
 
     public static void assertBreedsListStructure(Response response) {
-        Allure.step("Validar estrutura do mapa de racas/sub-racas", () -> {
+        Allure.step("Mapa de raças em message", () -> {
             Map<String, List<String>> breeds = response.jsonPath().getMap("message");
             assertNotNull(breeds, "Campo message deve ser um mapa");
             assertFalse(breeds.isEmpty(), "Mapa de racas nao deve estar vazio");
@@ -70,7 +70,7 @@ public final class ApiAssertions {
     }
 
     public static void assertBreedImagesStructure(Response response, String breed) {
-        Allure.step("Validar lista de URLs da raca: " + breed, () -> {
+        Allure.step("URLs da raça " + breed, () -> {
             List<String> images = response.jsonPath().getList("message");
             assertNotNull(images, "Lista de imagens nao pode ser nula");
             assertFalse(images.isEmpty(), "Lista de imagens nao pode estar vazia");
@@ -81,7 +81,7 @@ public final class ApiAssertions {
     }
 
     public static void assertRandomImageStructure(Response response) {
-        Allure.step("Validar URL retornada para imagem random", () -> {
+        Allure.step("URL no random", () -> {
             String imageUrl = response.jsonPath().getString("message");
             assertNotNull(imageUrl, "Campo message nao deve ser nulo");
             assertTrue(imageUrl.contains("images.dog.ceo"), "URL da imagem deve apontar para CDN esperada");
@@ -90,7 +90,7 @@ public final class ApiAssertions {
     }
 
     public static void assertErrorMessage(Response response, String expectedMessageFragment) {
-        Allure.step("Validar mensagem de erro coerente", () -> {
+        Allure.step("Mensagem de erro", () -> {
             String message = response.jsonPath().getString("message");
             assertNotNull(message, "Mensagem de erro nao deve ser nula");
             assertFalse(message.isBlank(), "Mensagem de erro nao deve ser vazia");

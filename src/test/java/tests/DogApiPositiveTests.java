@@ -21,17 +21,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("Catálogo de Raças e Imagens")
-@Feature("Fluxos positivos da Dog API")
+@Epic("Dog API")
+@Feature("200 / contrato")
 @Owner("alexxandrelopesqa")
 public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Consulta de catálogo de raças")
+    @Story("GET /breeds/list/all")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Confere status HTTP, contrato JSON e estrutura do payload de raças/sub-raças.")
+    @Description("200, schema e mapa message com raças.")
     @TmsLink("breed")
     @DisplayName("Retorna mapa de raças com status success")
     void shouldReturnBreedsListWithExpectedStructure() {
@@ -51,9 +51,9 @@ public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Consulta de imagens por raça existente")
+    @Story("GET /breed/{breed}/images")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Valida retorno de lista de imagens para uma raça existente.")
+    @Description("200 e lista de URLs para raça válida.")
     @TmsLink("breed-list")
     @DisplayName("Retorna lista de URLs válidas para raça existente")
     void shouldReturnImagesForExistingBreed() {
@@ -75,9 +75,9 @@ public class DogApiPositiveTests extends BaseApiTest {
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Exibição de imagem aleatória")
+    @Story("GET /breeds/image/random")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Confere se o endpoint random entrega uma URL de imagem válida.")
+    @Description("200 e URL de imagem no message.")
     @TmsLink("random")
     @DisplayName("Retorna URL válida ao solicitar imagem randômica")
     void shouldReturnValidRandomImage() {

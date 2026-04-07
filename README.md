@@ -1,228 +1,78 @@
-# Dog API - Qualidade do Catálogo de Raças e Imagens
+# dog-api
 
-Este repositório contém a automação de testes de API para a [Dog API](https://dog.ceo/dog-api/documentation), com foco na qualidade da experiência de consulta do catálogo de raças e imagens.
-
-Base URL: `https://dog.ceo/api`
+Testes de API contra a [Dog API](https://dog.ceo/dog-api/documentation) (`https://dog.ceo/api`).
 
 ![CI](https://github.com/alexxandrelopesqa/dog-api/actions/workflows/api-tests.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-17-blue)
 
-## Objetivo
-
-Garantir que os endpoints da aplicação de catálogo estejam estáveis, corretos e previsíveis, validando:
-
-- respostas corretas (HTTP e payload)
-- estrutura esperada dos dados
-- comportamento consistente em cenários positivos e negativos
-- rastreabilidade para análise de falhas
-
-## Endpoints cobertos
+## O que cobre
 
 - `GET /breeds/list/all`
 - `GET /breed/{breed}/images`
 - `GET /breeds/image/random`
 
-## Stack utilizada
+Contratos em JSON Schema (`src/test/resources/schemas/`), asserts em código e retry só para coisa transitória (429, 5xx, rede).
 
-- Java 17
-- Maven + Maven Wrapper (`mvnw`, `mvnw.cmd`)
-- JUnit 5
-- Rest Assured
-- Allure Report
-- GitHub Actions + GitHub Pages
-- Jenkins (pipeline declarativa via `Jenkinsfile`)
-- Docker (opcional)
+## Stack
 
-## Arquitetura do projeto
+Java 17, Maven Wrapper, JUnit 5, Rest Assured, Allure. CI no GitHub Actions; relatório no Pages via branch `gh-pages`. Tem também `Jenkinsfile` e um `Dockerfile` opcional.
+
+## Layout
 
 ```text
 src/test/java/
-  core/      -> configuração base, retry, assertions, hooks e metadados Allure
-  client/    -> cliente HTTP da Dog API
-  models/    -> POJOs para desserialização
-  tests/     -> classes de teste (positivos e negativos)
+  core/     — config, retry, asserts, Allure
+  client/   — chamadas HTTP
+  models/   — respostas
+  tests/    — suíte
 
 src/test/resources/
-  schemas/   -> contratos JSON Schema
-  allure/    -> categories.json
-  testdata/  -> massa de testes
+  schemas/, allure/, testdata/
 ```
 
-## Cenários de teste implementados
+## Rodar
 
-### Positivos
-
-1. `GET /breeds/list/all`
-   - HTTP `200`
-   - `status=success`
-   - payload com mapa de raças/sub-raças
-   - schema validation
-
-2. `GET /breed/{breed}/images` para raça válida
-   - HTTP `200`
-   - lista de URLs de imagens
-   - schema validation
-
-3. `GET /breeds/image/random`
-   - HTTP `200`
-   - URL válida de imagem
-   - schema validation
-
-### Negativos e robustez
-
-1. `GET /breed/{breed}/images` com raça inválida
-   - HTTP `404`
-   - `status=error`
-   - mensagem coerente de erro
-   - schema de erro
-
-2. Validação defensiva de payload
-   - checagem de campos obrigatórios
-   - checagem de tipos esperados
-
-### Estabilidade
-
-- Retry aplicado apenas para falhas transitórias (`429`, `5xx` e exceções de rede), sem mascarar falhas reais de contrato/funcional.
-
-## Pré-requisitos
-
-- JDK 17+
-- Git
-- acesso à internet para consumir a Dog API pública
-- Docker (opcional)
-
-## Como executar localmente
-
-### Suite completa
-
-Windows (PowerShell):
-
-```powershell
-.\mvnw.cmd clean test
-```
-
-Linux/macOS:
+Suite padrão:
 
 ```bash
 ./mvnw clean test
 ```
 
-### Perfis
-
-Smoke:
-
-```bash
-./mvnw clean test -Psmoke
-```
-
-Regression:
-
-```bash
-./mvnw clean test -Pregression
-```
-
-### Teste específico
-
-```bash
-./mvnw -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test
-```
-
-### Execução recomendada para reduzir flakiness de API pública
-
-Windows (PowerShell):
+Windows (PowerShell), quando precisar passar `-D`:
 
 ```powershell
 .\mvnw.cmd --% clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
 ```
 
-Linux/macOS:
+Perfis: `-Psmoke`, `-Pregression`. Um método:
 
 ```bash
-./mvnw clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
+./mvnw -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test
 ```
 
-## Relatório Allure
-
-Gerar relatório:
-
-Windows:
-
-```powershell
-.\mvnw.cmd allure:report
-start .\target\site\allure-maven-plugin\index.html
-```
-
-Linux/macOS:
+## Allure
 
 ```bash
 ./mvnw allure:report
-xdg-open ./target/site/allure-maven-plugin/index.html
 ```
 
-Arquivos gerados:
+Abre `target/site/allure-maven-plugin/index.html`. No site publicado, trends usam a pasta `history/` que o CI copia da última versão em `gh-pages`. A aba Retries do Allure vem do Surefire (`rerunFailingTestsCount`); no `pom` o default local é 0, no CI é 1 (`-Dsurefire.rerunFailingTestsCount=1`).
 
-- `target/allure-results`
-- `target/site/allure-maven-plugin`
-- `environment.properties`
-- `executor.json`
-- `categories.json`
+## GitHub Actions
 
-**Histórico (trends)** no relatório publicado depende da pasta `history/` gerada a partir do site anterior na branch `gh-pages`. **Retries** no Allure refletem reexecuções do Surefire (`rerunFailingTestsCount`); o retry HTTP da suíte é independente disso. Localmente o padrão é `surefire.rerunFailingTestsCount=0`; para espelhar o CI: `-Dsurefire.rerunFailingTestsCount=1`.
+Arquivo: `.github/workflows/api-tests.yml`. Matriz ubuntu/windows/macos, upload de relatórios, job que junta resultados do Ubuntu, gera HTML e faz push para `gh-pages`. No runner Windows o Maven vai com `mvnw.cmd --%` para o PowerShell não tragar `-P`/`-D`.
 
-## CI/CD com GitHub Actions
-
-Workflow: `.github/workflows/api-tests.yml`
-
-Fluxo:
-
-1. Job de testes em matriz (`ubuntu`, `windows`, `macos`); no Windows o workflow usa `mvnw.cmd --%` para o PowerShell não engolir `-Pregression` e os `-D…`.
-2. Upload de `surefire-reports` e `allure-results`
-3. Job agregador para relatório Allure consolidado
-4. Push do site estático para a branch `gh-pages` (mantém `history/` entre execuções e snapshots em `runs/<run_number>`)
-5. Nos jobs de teste, `rerunFailingTestsCount=1` no Surefire para alimentar a aba **Retries** do Allure
-
-Relatório publicado em:
-
-- `https://alexxandrelopesqa.github.io/dog-api/`
-
-Configure o repositório em **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. O fluxo antigo “GitHub Actions” com `deploy-pages` não grava a branch `gh-pages`, então o histórico do Allure não persistia.
+Relatório: `https://alexxandrelopesqa.github.io/dog-api/`  
+Pages: **Settings → Pages → Deploy from a branch → `gh-pages`**, pasta root.
 
 ## Jenkins
 
-O repositório possui `Jenkinsfile` para pipeline declarativa com:
+O `Jenkinsfile` faz checkout, `clean test -Pregression` com timeout de resposta alargado, `allure:report` e arquivo de `target/`. Agente precisa de JDK 17 e rede.
 
-- checkout do código
-- `clean test -Pregression -Ddog.api.maxResponseTimeMs=5000`
-- `allure:report`
-- publicação de artefatos:
-  - `target/surefire-reports`
-  - `target/allure-results`
-  - `target/site/allure-maven-plugin`
+## Se der erro
 
-Requisitos do agente Jenkins:
+- API lenta: `-Ddog.api.maxResponseTimeMs=5000`
+- Pages sem atualizar: confirma fonte `gh-pages` e se o job de agregação/publicação correu no Actions
+- Primeira vez sem branch `gh-pages`: o passo que restaura `history` pode não fazer nada ainda; normal
 
-- JDK 17+
-- acesso à internet (dependências Maven e Dog API)
-- permissão de escrita no workspace (`target/`)
-
-## Troubleshooting
-
-- **Falha por latência da API pública**  
-  Rode com: `-Ddog.api.maxResponseTimeMs=5000`
-
-- **Falha na publicação do GitHub Pages**  
-  Use **Deploy from a branch** com **`gh-pages`** e pasta **root**. Confira em **Actions** se o job “Aggregate Allure report” concluiu o passo “Publish Allure site to gh-pages branch”.
-
-- **Aviso no passo de checkout do history (`gh-pages`)**  
-  Pode ocorrer na primeira publicação; não invalida os testes da execução atual.
-
-## Limitações conhecidas
-
-- A Dog API é externa e pode oscilar em disponibilidade/latência.
-- O tempo de resposta pode variar conforme rede/região do executor.
-
-## Próximos passos sugeridos
-
-- separar execução `smoke` para PR e `regression` para merge em `main`
-- evoluir versionamento de contrato por endpoint
-- adicionar badge/link direto para o último Allure report publicado
+A API é pública; latência e falhas intermitentes acontecem.

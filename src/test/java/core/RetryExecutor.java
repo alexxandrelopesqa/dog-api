@@ -22,14 +22,14 @@ public final class RetryExecutor {
                 if (!isTransientStatus(response.getStatusCode()) || attempt == ConfigManager.retryAttempts()) {
                     return response;
                 }
-                Allure.step("Retry devido a status transitorio: " + response.getStatusCode());
+                Allure.step("Nova tentativa (HTTP " + response.getStatusCode() + ")");
                 AllureReportManager.attachTransientRetry(endpoint, attempt, "HTTP " + response.getStatusCode());
             } catch (RuntimeException exception) {
                 runtimeException = exception;
                 if (attempt == ConfigManager.retryAttempts()) {
                     break;
                 }
-                Allure.step("Retry devido a excecao transitoria: " + exception.getClass().getSimpleName());
+                Allure.step("Nova tentativa (" + exception.getClass().getSimpleName() + ")");
                 AllureReportManager.attachTransientRetry(endpoint, attempt, exception.getMessage());
             }
 
