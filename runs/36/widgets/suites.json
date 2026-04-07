@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"430db947188813ba04c62f02faa9ee60","name":"tests.DogApiPositiveTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":3,"unknown":0,"total":3}},{"uid":"cbbe55052e5a725fed983bab5bb5bc17","name":"tests.DogApiNegativeTests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":2,"unknown":0,"total":2}}]}
