@@ -86,16 +86,27 @@ jobs:
           name: allure-results-ubuntu-latest
           path: target/allure-results
 
-      - name: Checkout gh-pages branch for history
+      - name: Check if gh-pages branch exists
+        id: gh_pages_check
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        continue-on-error: true
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" gh-pages >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "gh-pages branch not found yet; skipping history restore."
+          fi
+
+      - name: Checkout gh-pages branch for history
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.gh_pages_check.outputs.exists == 'true'
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           ref: gh-pages
           path: gh-pages
 
       - name: Restore Allure history from Pages
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.gh_pages_check.outputs.exists == 'true'
         shell: bash
         run: |
           if [ -d "gh-pages/history" ]; then
