@@ -38,7 +38,7 @@ public class DogApiNegativeTests extends BaseApiTest {
         String endpoint = "/breed/" + invalidBreed + "/images";
         AllureReportManager.attachExecutionContext("negative-invalid-breed", endpoint);
 
-        Response response = RetryExecutor.executeWithTransientRetry(endpoint, () -> dogApiClient.getBreedImages(invalidBreed));
+        Response response = RetryExecutor.executeWithRetry(endpoint, () -> dogApiClient.getBreedImages(invalidBreed));
         ApiBaseResponse body = response.as(ApiBaseResponse.class);
 
         ApiAssertions.assertHttpAndContentType(response, 404);
@@ -56,11 +56,11 @@ public class DogApiNegativeTests extends BaseApiTest {
     @Description("status e message presentes e string.")
     @TmsLink("random")
     @DisplayName("Tipos básicos no payload do random")
-    void shouldValidatePayloadDefensively() {
+    void shouldMatchRandomPayloadShape() {
         String endpoint = "/breeds/image/random";
-        AllureReportManager.attachExecutionContext("defensive-payload-validation", endpoint);
+        AllureReportManager.attachExecutionContext("random-payload-shape", endpoint);
 
-        Response response = RetryExecutor.executeWithTransientRetry(endpoint, dogApiClient::getRandomImage);
+        Response response = RetryExecutor.executeWithRetry(endpoint, dogApiClient::getRandomImage);
         JsonPath jsonPath = response.jsonPath();
         Map<String, Object> payload = jsonPath.getMap("$");
 

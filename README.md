@@ -11,7 +11,7 @@ Testes de API contra a [Dog API](https://dog.ceo/dog-api/documentation) (`https:
 - `GET /breed/{breed}/images`
 - `GET /breeds/image/random`
 
-Contratos em JSON Schema (`src/test/resources/schemas/`), asserts em código e retry só para coisa transitória (429, 5xx, rede).
+Contratos em JSON Schema (`src/test/resources/schemas/`), asserts em código e retry em 429, 5xx ou falha de rede.
 
 ## Stack
 
@@ -60,7 +60,7 @@ Abre `target/site/allure-maven-plugin/index.html`. No site publicado, trends usa
 
 ## GitHub Actions
 
-Arquivo: `.github/workflows/api-tests.yml`. Matriz ubuntu/windows/macos, upload de relatórios, job que junta resultados do Ubuntu, gera HTML e faz push para `gh-pages`. No runner Windows o Maven vai com `mvnw.cmd --%` para o PowerShell não tragar `-P`/`-D`.
+Arquivo: `.github/workflows/api-tests.yml`. Matriz ubuntu/windows/macos, upload de relatórios, job que junta resultados do Ubuntu, gera HTML e faz push para `gh-pages`. No Windows o job usa `mvnw.cmd --%` para o PowerShell não tratar `-P`/`-D` como parâmetros dele.
 
 Relatório: `https://alexxandrelopesqa.github.io/dog-api/`  
 Pages: **Settings → Pages → Deploy from a branch → `gh-pages`**, pasta root.

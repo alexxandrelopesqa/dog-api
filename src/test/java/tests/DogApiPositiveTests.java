@@ -38,7 +38,7 @@ public class DogApiPositiveTests extends BaseApiTest {
         String endpoint = "/breeds/list/all";
         AllureReportManager.attachExecutionContext("positive-list-all-breeds", endpoint);
 
-        Response response = RetryExecutor.executeWithTransientRetry(endpoint, dogApiClient::getAllBreeds);
+        Response response = RetryExecutor.executeWithRetry(endpoint, dogApiClient::getAllBreeds);
         BreedListResponse body = response.as(BreedListResponse.class);
 
         ApiAssertions.assertHttpAndContentType(response, 200);
@@ -61,7 +61,7 @@ public class DogApiPositiveTests extends BaseApiTest {
         String endpoint = "/breed/" + breed + "/images";
         AllureReportManager.attachExecutionContext("positive-breed-images", endpoint);
 
-        Response response = RetryExecutor.executeWithTransientRetry(endpoint, () -> dogApiClient.getBreedImages(breed));
+        Response response = RetryExecutor.executeWithRetry(endpoint, () -> dogApiClient.getBreedImages(breed));
         BreedImagesResponse body = response.as(BreedImagesResponse.class);
 
         ApiAssertions.assertHttpAndContentType(response, 200);
@@ -84,7 +84,7 @@ public class DogApiPositiveTests extends BaseApiTest {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("positive-random-image", endpoint);
 
-        Response response = RetryExecutor.executeWithTransientRetry(endpoint, dogApiClient::getRandomImage);
+        Response response = RetryExecutor.executeWithRetry(endpoint, dogApiClient::getRandomImage);
         RandomImageResponse body = response.as(RandomImageResponse.class);
 
         ApiAssertions.assertHttpAndContentType(response, 200);

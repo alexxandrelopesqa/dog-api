@@ -12,7 +12,7 @@ public final class RetryExecutor {
     private RetryExecutor() {
     }
 
-    public static Response executeWithTransientRetry(String endpoint, Supplier<Response> call) {
+    public static Response executeWithRetry(String endpoint, Supplier<Response> call) {
         Response response = null;
         RuntimeException runtimeException = null;
 
