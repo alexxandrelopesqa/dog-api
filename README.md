@@ -167,6 +167,8 @@ Arquivos gerados:
 - `executor.json`
 - `categories.json`
 
+**Histórico (trends)** no relatório publicado depende da pasta `history/` gerada a partir do site anterior na branch `gh-pages`. **Retries** no Allure refletem reexecuções do Surefire (`rerunFailingTestsCount`); o retry HTTP da suíte é independente disso. Localmente o padrão é `surefire.rerunFailingTestsCount=0`; para espelhar o CI: `-Dsurefire.rerunFailingTestsCount=1`.
+
 ## CI/CD com GitHub Actions
 
 Workflow: `.github/workflows/api-tests.yml`
@@ -176,12 +178,14 @@ Fluxo:
 1. Job de testes em matriz (`ubuntu`, `windows`, `macos`)
 2. Upload de `surefire-reports` e `allure-results`
 3. Job agregador para relatório Allure consolidado
-4. Publicação no GitHub Pages
-5. Preservação de histórico e snapshots por execução (`runs/<run_number>`)
+4. Push do site estático para a branch `gh-pages` (mantém `history/` entre execuções e snapshots em `runs/<run_number>`)
+5. Nos jobs de teste, `rerunFailingTestsCount=1` no Surefire para alimentar a aba **Retries** do Allure
 
 Relatório publicado em:
 
 - `https://alexxandrelopesqa.github.io/dog-api/`
+
+Configure o repositório em **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. O fluxo antigo “GitHub Actions” com `deploy-pages` não grava a branch `gh-pages`, então o histórico do Allure não persistia.
 
 ## Jenkins
 
@@ -207,7 +211,7 @@ Requisitos do agente Jenkins:
   Rode com: `-Ddog.api.maxResponseTimeMs=5000`
 
 - **Falha na publicação do GitHub Pages**  
-  Verifique `Settings > Pages > Source = GitHub Actions`
+  Use **Deploy from a branch** com **`gh-pages`** e pasta **root**. Confira em **Actions** se o job “Aggregate Allure report” concluiu o passo “Publish Allure site to gh-pages branch”.
 
 - **Aviso no passo de checkout do history (`gh-pages`)**  
   Pode ocorrer na primeira publicação; não invalida os testes da execução atual.
