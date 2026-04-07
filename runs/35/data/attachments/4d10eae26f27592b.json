@@ -1,0 +1,8 @@
+{
+  "scenario": "defensive-payload-validation",
+  "endpoint": "/breeds/image/random",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
