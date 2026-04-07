@@ -1,0 +1,6 @@
+"Epic","Feature","Story","FAILED","BROKEN","PASSED","SKIPPED","UNKNOWN"
+"Catálogo de Raças e Imagens","Fluxos positivos da Dog API","Consulta de imagens por raça existente","0","0","1","0","0"
+"Catálogo de Raças e Imagens","Fluxos positivos da Dog API","Consulta de catálogo de raças","0","0","1","0","0"
+"Catálogo de Raças e Imagens","Fluxos positivos da Dog API","Exibição de imagem aleatória","0","0","1","0","0"
+"Catálogo de Raças e Imagens","Fluxos de robustez e erro da Dog API","Validação defensiva do payload","0","0","1","0","0"
+"Catálogo de Raças e Imagens","Fluxos de robustez e erro da Dog API","Consulta com raça inexistente","0","0","1","0","0"
