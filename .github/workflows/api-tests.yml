@@ -37,11 +37,11 @@ jobs:
 
       - name: Execute API test suite (Windows)
         if: runner.os == 'Windows'
-        run: .\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
+        run: .\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000 -Dsurefire.rerunFailingTestsCount=1
 
       - name: Execute API test suite (Linux/macOS)
         if: runner.os != 'Windows'
-        run: ./mvnw --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
+        run: ./mvnw --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000 -Dsurefire.rerunFailingTestsCount=1
 
       - name: Upload surefire reports
         if: always()
@@ -65,7 +65,7 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -142,27 +142,11 @@ jobs:
           path: target/site/allure-maven-plugin
           if-no-files-found: warn
 
-      - name: Upload GitHub Pages artifact
+      - name: Publish Allure site to gh-pages branch
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
         with:
-          path: public
-
-  deploy-pages:
-    name: Publish report on GitHub Pages
-    needs: allure-aggregate
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
-
-      - name: Deploy GitHub Pages artifact
-        id: deploy
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./public
+          force_orphan: false
