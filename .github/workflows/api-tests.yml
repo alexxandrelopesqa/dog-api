@@ -35,9 +35,10 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod +x mvnw
 
+      # PowerShell interpreta -P/-D; --% repassa o restante ao mvnw.cmd (igual ao README local).
       - name: Execute API test suite (Windows)
         if: runner.os == 'Windows'
-        run: .\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000 -Dsurefire.rerunFailingTestsCount=1
+        run: .\mvnw.cmd --% --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000 -Dsurefire.rerunFailingTestsCount=1
 
       - name: Execute API test suite (Linux/macOS)
         if: runner.os != 'Windows'
