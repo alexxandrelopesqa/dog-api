@@ -1,6 +1,6 @@
-# Dog API - Teste Técnico QA API
+# Dog API - Qualidade do Catálogo de Raças e Imagens
 
-Este repositório contém a automação de testes de API para a [Dog API](https://dog.ceo/dog-api/documentation), com foco em qualidade funcional, validação de contrato e execução reproduzível em diferentes ambientes.
+Este repositório contém a automação de testes de API para a [Dog API](https://dog.ceo/dog-api/documentation), com foco na qualidade da experiência de consulta do catálogo de raças e imagens.
 
 Base URL: `https://dog.ceo/api`
 
@@ -9,7 +9,7 @@ Base URL: `https://dog.ceo/api`
 
 ## Objetivo
 
-Validar endpoints críticos da Dog API, garantindo:
+Garantir que os endpoints da aplicação de catálogo estejam estáveis, corretos e previsíveis, validando:
 
 - respostas corretas (HTTP e payload)
 - estrutura esperada dos dados

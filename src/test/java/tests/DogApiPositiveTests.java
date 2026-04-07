@@ -21,15 +21,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("Teste técnico QA API")
-@Feature("Dog API - cenários positivos")
+@Epic("Catálogo de Raças e Imagens")
+@Feature("Fluxos positivos da Dog API")
 @Owner("alexxandrelopesqa")
 public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Listagem de raças")
+    @Story("Consulta de catálogo de raças")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Confere status HTTP, contrato JSON e estrutura do payload de raças/sub-raças.")
     @TmsLink("breed")
@@ -51,7 +51,7 @@ public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Imagens por raça válida")
+    @Story("Consulta de imagens por raça existente")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Valida retorno de lista de imagens para uma raça existente.")
     @TmsLink("breed-list")
@@ -75,7 +75,7 @@ public class DogApiPositiveTests extends BaseApiTest {
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("Imagem aleatória")
+    @Story("Exibição de imagem aleatória")
     @Severity(SeverityLevel.NORMAL)
     @Description("Confere se o endpoint random entrega uma URL de imagem válida.")
     @TmsLink("random")

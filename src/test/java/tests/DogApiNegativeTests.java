@@ -21,14 +21,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("Teste técnico QA API")
-@Feature("Dog API - cenários negativos")
+@Epic("Catálogo de Raças e Imagens")
+@Feature("Fluxos de robustez e erro da Dog API")
 @Owner("alexxandrelopesqa")
 public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Raça inexistente")
+    @Story("Consulta com raça inexistente")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Valida resposta de erro para raça inexistente em /breed/{breed}/images.")
     @TmsLink("breed-list")
@@ -51,7 +51,7 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Validação defensiva de payload")
+    @Story("Validação defensiva do payload")
     @Severity(SeverityLevel.NORMAL)
     @Description("Executa validações defensivas para garantir formato mínimo e tipos esperados.")
     @TmsLink("random")
