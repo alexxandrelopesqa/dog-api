@@ -1,6 +1,0 @@
-"Epic","Feature","Story","FAILED","BROKEN","PASSED","SKIPPED","UNKNOWN"
-"Dog API","404 / payload","Raça inválida em /breed/{breed}/images","0","0","1","0","0"
-"Dog API","200 / contrato","GET /breeds/image/random","0","0","1","0","0"
-"Dog API","404 / payload","Campos do JSON em /breeds/image/random","0","0","1","0","0"
-"Dog API","200 / contrato","GET /breed/{breed}/images","0","0","1","0","0"
-"Dog API","200 / contrato","GET /breeds/list/all","0","0","1","0","0"
