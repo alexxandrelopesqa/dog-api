@@ -21,16 +21,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@Epic("Catálogo de Raças e Imagens")
-@Feature("Fluxos de robustez e erro da Dog API")
+@Epic("Dog API")
+@Feature("404 / payload")
 @Owner("alexxandrelopesqa")
 public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Consulta com raça inexistente")
+    @Story("Raça inválida em /breed/{breed}/images")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Valida resposta de erro para raça inexistente em /breed/{breed}/images.")
+    @Description("404, status error e mensagem sobre breed.")
     @TmsLink("breed-list")
     @DisplayName("Retorna status error para raça inválida")
     void shouldReturnErrorForInvalidBreed() {
@@ -51,11 +51,11 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Validação defensiva do payload")
+    @Story("Campos do JSON em /breeds/image/random")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Executa validações defensivas para garantir formato mínimo e tipos esperados.")
+    @Description("status e message presentes e string.")
     @TmsLink("random")
-    @DisplayName("Valida estrutura defensiva com campos obrigatórios e tipos")
+    @DisplayName("Tipos básicos no payload do random")
     void shouldValidatePayloadDefensively() {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("defensive-payload-validation", endpoint);

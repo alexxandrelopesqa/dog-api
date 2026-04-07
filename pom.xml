@@ -8,7 +8,7 @@
     <artifactId>dog-api-automation</artifactId>
     <version>1.0.0</version>
     <name>dog-api-automation</name>
-    <description>Automacao profissional de testes da Dog API com Rest Assured, JUnit 5 e Allure</description>
+    <description>Testes da Dog API com Rest Assured, JUnit 5 e Allure</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -23,7 +23,6 @@
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
         <jackson.version>2.17.1</jackson.version>
         <test.tags></test.tags>
-        <!-- 0 localmente; CI/Jenkins passam -Dsurefire.rerunFailingTestsCount=1 para a aba Retries do Allure -->
         <surefire.rerunFailingTestsCount>0</surefire.rerunFailingTestsCount>
     </properties>
 

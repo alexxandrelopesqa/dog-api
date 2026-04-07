@@ -28,7 +28,7 @@ public final class AllureReportManager {
             writeExecutor(outputDir);
             copyCategories(outputDir);
         } catch (IOException exception) {
-            throw new IllegalStateException("Falha ao preparar metadados do Allure", exception);
+            throw new IllegalStateException("Nao foi possivel escrever em allure-results", exception);
         }
     }
 
@@ -116,10 +116,10 @@ public final class AllureReportManager {
         String executor = "{\n"
             + "  \"name\": \"GitHub Actions\",\n"
             + "  \"type\": \"github\",\n"
-            + "  \"buildName\": \"Dog API QA Automation\",\n"
+            + "  \"buildName\": \"dog-api\",\n"
             + "  \"buildOrder\": \"" + runNumber + "\",\n"
             + "  \"buildUrl\": \"" + escape(runUrl) + "\",\n"
-            + "  \"reportName\": \"Dog API Allure Report\",\n"
+            + "  \"reportName\": \"Allure\",\n"
             + "  \"url\": \"" + escape(runUrl) + "\",\n"
             + "  \"timestamp\": \"" + Instant.now() + "\"\n"
             + "}";

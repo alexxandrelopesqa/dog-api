@@ -1,4 +1,4 @@
-name: Dog API QA Pipeline
+name: API tests
 
 on:
   push:
@@ -35,7 +35,6 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod +x mvnw
 
-      # PowerShell interpreta -P/-D; --% repassa o restante ao mvnw.cmd (igual ao README local).
       - name: Execute API test suite (Windows)
         if: runner.os == 'Windows'
         run: .\mvnw.cmd --% --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=5000 -Dsurefire.rerunFailingTestsCount=1
@@ -61,7 +60,7 @@ jobs:
           if-no-files-found: warn
 
   allure-aggregate:
-    name: Aggregate Allure report
+    name: Allure e gh-pages
     needs: test
     if: always()
     runs-on: ubuntu-latest
@@ -96,17 +95,17 @@ jobs:
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "gh-pages branch not found yet; skipping history restore."
+            echo "Sem branch gh-pages; history ignorada nesta execução."
           fi
 
-      - name: Checkout gh-pages branch for history
+      - name: Checkout gh-pages (history)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.gh_pages_check.outputs.exists == 'true'
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: Restore Allure history from Pages
+      - name: Copiar history para allure-results
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.gh_pages_check.outputs.exists == 'true'
         shell: bash
         run: |
@@ -115,10 +114,10 @@ jobs:
             cp -R gh-pages/history/. target/allure-results/history/
           fi
 
-      - name: Generate consolidated Allure HTML
+      - name: mvn allure:report
         run: ./mvnw --batch-mode --no-transfer-progress allure:report
 
-      - name: Build GitHub Pages structure
+      - name: Montar public/
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         shell: bash
         run: |
@@ -135,7 +134,7 @@ jobs:
             cp -R target/site/allure-maven-plugin/history/. public/history/
           fi
 
-      - name: Upload aggregated Allure HTML artifact
+      - name: Upload Allure HTML
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -143,7 +142,7 @@ jobs:
           path: target/site/allure-maven-plugin
           if-no-files-found: warn
 
-      - name: Publish Allure site to gh-pages branch
+      - name: Push para gh-pages
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
         with:
