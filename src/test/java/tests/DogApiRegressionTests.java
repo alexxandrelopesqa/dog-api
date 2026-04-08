@@ -5,7 +5,6 @@ import core.ApiAssertions;
 import core.BaseApiTest;
 import core.RetryExecutor;
 import core.TestDataLoader;
-import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
@@ -20,15 +19,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("Regressao documentada")
+@Feature("Outros GETs")
 @Owner("alexxandrelopesqa")
 public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("RND-02 GET /breeds/image/random/{n}")
+    @Story("GET /breeds/image/random/{n}")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Varias URLs aleatorias; doc: max 50.")
     @DisplayName("Random global com N=3 retorna 3 URLs")
     void randomGlobal_returnsNImages() {
         int n = 3;
@@ -46,7 +44,7 @@ public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("RND-02 limite 50")
+    @Story("GET /breeds/image/random/51")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Random global N=51 nao passa de 50 itens")
     void randomGlobal_fiftyOneCappedAtFifty() {
@@ -66,7 +64,7 @@ public class DogApiRegressionTests extends BaseApiTest {
     @Test
     @Tag("regression")
     @Tag("smoke")
-    @Story("BRD-02 GET /breed/{breed}/images/random")
+    @Story("GET /breed/{breed}/images/random")
     @Severity(SeverityLevel.CRITICAL)
     @DisplayName("Random de uma raca retorna uma URL")
     void breedRandom_returnsSingleUrl() {
@@ -85,7 +83,7 @@ public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("BRD-03 GET /breed/{breed}/images/random/{n}")
+    @Story("GET /breed/{breed}/images/random/{n}")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Random de raca com N=5")
     void breedRandom_returnsNImages() {
@@ -106,7 +104,7 @@ public class DogApiRegressionTests extends BaseApiTest {
     @Test
     @Tag("regression")
     @Tag("smoke")
-    @Story("SUB-01 GET /breed/{breed}/list")
+    @Story("GET /breed/{breed}/list")
     @Severity(SeverityLevel.CRITICAL)
     @DisplayName("Lista de sub-racas do hound inclui afghan")
     void subBreedList_houndHasExpectedSub() {
@@ -125,7 +123,7 @@ public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("SUB-01 raca sem sub-racas")
+    @Story("GET /breed/beagle/list")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Beagle: list retorna array vazio")
     void subBreedList_emptyForBreedWithoutSubs() {
@@ -141,12 +139,12 @@ public class DogApiRegressionTests extends BaseApiTest {
         ApiAssertions.assertMandatoryKeys(response, "success");
         List<?> subs = response.jsonPath().getList("message");
         Assertions.assertNotNull(subs);
-        Assertions.assertTrue(subs.isEmpty(), "message deveria ser []");
+        Assertions.assertTrue(subs.isEmpty(), "message vazio");
     }
 
     @Test
     @Tag("regression")
-    @Story("SUB-02 GET /breed/{breed}/{sub}/images")
+    @Story("GET /breed/hound/afghan/images")
     @Severity(SeverityLevel.CRITICAL)
     @DisplayName("Todas as imagens da sub-raca afghan")
     void subBreedImages_returnsList() {
@@ -166,7 +164,7 @@ public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("SUB-03 random sub-raca")
+    @Story("GET /breed/hound/afghan/images/random")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Random single da sub-raca afghan")
     void subBreedRandom_returnsOneUrl() {
@@ -186,7 +184,7 @@ public class DogApiRegressionTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("SUB-04 random N sub-raca")
+    @Story("GET /breed/hound/afghan/images/random/2")
     @Severity(SeverityLevel.NORMAL)
     @DisplayName("Random N=2 da sub-raca afghan")
     void subBreedRandom_returnsNUrls() {

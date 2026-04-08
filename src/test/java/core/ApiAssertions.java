@@ -115,7 +115,7 @@ public final class ApiAssertions {
                 assertTrue(url.startsWith("https://") || url.startsWith("http://"), "URL invalida: " + url);
                 assertTrue(
                     url.contains("images.dog.ceo"),
-                    "URL deveria ser do CDN dog.ceo: " + url
+                    "fora de images.dog.ceo: " + url
                 );
             }
         });
@@ -127,7 +127,7 @@ public final class ApiAssertions {
             assertNotNull(subs, "message deve ser lista");
             for (String expected : expectedSubBreeds) {
                 boolean found = subs.stream().anyMatch(s -> s.equalsIgnoreCase(expected));
-                assertTrue(found, "Lista deveria conter sub-raca '" + expected + "': " + subs);
+                assertTrue(found, "falta sub-raca '" + expected + "': " + subs);
             }
         });
     }
@@ -140,7 +140,7 @@ public final class ApiAssertions {
             String first = images.get(0).toLowerCase();
             assertTrue(
                 Stream.of(breed, sub).anyMatch(part -> first.contains(part.toLowerCase())),
-                "URL deveria mencionar raca ou sub-raca: " + first
+                "URL sem raca/sub esperada: " + first
             );
         });
     }
