@@ -133,6 +133,8 @@ jobs:
             mkdir -p public/history
             cp -R target/site/allure-maven-plugin/history/. public/history/
           fi
+          touch public/.nojekyll
+          test -f public/index.html || { echo "Falta public/index.html apos allure:report"; exit 1; }
 
       - name: Upload Allure HTML
         if: always()
@@ -150,3 +152,4 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./public
           force_orphan: false
+          enable_jekyll: false

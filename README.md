@@ -63,8 +63,9 @@ Abre `target/site/allure-maven-plugin/index.html`. Trends no site publicado usam
 
 `.github/workflows/api-tests.yml`: matriz de OS, upload de artefatos, agregação no Ubuntu, push `gh-pages`. Windows: `mvnw.cmd --%` para não partir os `-P`/`-D` no PowerShell.
 
-Relatório: `https://alexxandrelopesqa.github.io/dog-api/`  
-Pages: branch `gh-pages`, pasta root.
+Relatório: `https://alexxandrelopesqa.github.io/dog-api/` (tem de incluir `/dog-api/` no path).
+
+**Pages:** em **Settings → Pages → Build and deployment**, a fonte tem de ser **Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. Se estiver **GitHub Actions** como fonte, o site não usa o `index.html` que este repo envia para `gh-pages` — aí aparece página errada ou vazia. Depois de mudar, espera 1–2 minutos e atualiza com cache limpo (Ctrl+F5).
 
 ## Jenkins
 
