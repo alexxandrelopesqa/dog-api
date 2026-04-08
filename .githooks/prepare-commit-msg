@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Remove rodapés automáticos de ferramentas do ficheiro de mensagem de commit.
+msg_file=$1
+[ -n "$msg_file" ] && [ -f "$msg_file" ] || exit 0
+tmp="${msg_file}.tmp.$$"
+sed '/^Made-with:/d' "$msg_file" > "$tmp" && mv "$tmp" "$msg_file"

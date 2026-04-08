@@ -1,0 +1,2 @@
+# Hooks shell: LF para o Git executar bem em qualquer SO
+.githooks/* text eol=lf

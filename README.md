@@ -69,6 +69,16 @@ Relatório online: `https://alexxandrelopesqa.github.io/dog-api/`
 
 Em **Settings → Pages** a fonte tem de ser **branch `gh-pages`**, pasta **root**. Se estiver em `main`, vês o repositório em vez do relatório.
 
+## Git
+
+Uma vez por clone, para activar o hook que remove linhas `Made-with: …` das mensagens de commit (se o editor as acrescentar):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Alternativa: nas definições do teu editor ou IDE, desactivar o texto automático na mensagem de commit.
+
 ## Jenkins e Docker
 
 `Jenkinsfile`: checkout, testes com timeout 5000 ms no assert, `allure:report`, artefactos em `target/`.
