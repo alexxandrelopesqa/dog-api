@@ -59,6 +59,8 @@ Relatório local: `./mvnw allure:report` e abre `target/site/allure-maven-plugin
 
 Ficheiro `.github/workflows/api-tests.yml` — testes em três SOs com artefactos de Surefire e Allure por SO.
 
+Disparo **automático todos os dias às 20:00 UTC** (`schedule` com cron). Em Portugal continental isso é 20:00 no inverno (UTC+0) e 21:00 no horário de verão (UTC+1); ajusta o cron no workflow se quiseres outra hora ou fuso fixo.
+
 O job que gera o HTML e publica no Pages **só descarrega `allure-results-ubuntu-latest`**. Assim o relatório online não triplica os mesmos 20 testes (Windows e macOS continuam nos artefactos da matriz para comparar se precisares).
 
 Em PRs não há push para `gh-pages`.
@@ -69,7 +71,7 @@ Em **Settings → Pages** a fonte tem de ser **branch `gh-pages`**, pasta **root
 
 ## Jenkins e Docker
 
-`Jenkinsfile`: checkout, testes com timeout 5000 ms no assert, `allure:report`, arquivo de `target/`.
+`Jenkinsfile`: checkout, testes com timeout 5000 ms no assert, `allure:report`, artefactos em `target/`.
 
 `Dockerfile`: imagem Maven + Temurin 17; `docker build -t dog-api-tests .` e `docker run --rm dog-api-tests` corre testes e `allure:report`.
 

@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+  schedule:
+    # 20:00 UTC todos os dias (cron do GitHub Actions é sempre UTC)
+    - cron: "0 20 * * *"
 
 permissions:
   contents: read
