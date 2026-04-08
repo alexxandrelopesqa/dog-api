@@ -61,7 +61,7 @@ Abre `target/site/allure-maven-plugin/index.html`. Trends no site publicado usam
 
 ## GitHub Actions
 
-`.github/workflows/api-tests.yml`: matriz de OS, artefactos, agregação no Ubuntu, push `gh-pages`. Windows: `mvnw.cmd --%` para não partir os `-P`/`-D` no PowerShell.
+`.github/workflows/api-tests.yml`: matriz de OS, upload de artefatos, agregação no Ubuntu, push `gh-pages`. Windows: `mvnw.cmd --%` para não partir os `-P`/`-D` no PowerShell.
 
 Relatório: `https://alexxandrelopesqa.github.io/dog-api/`  
 Pages: branch `gh-pages`, pasta root.

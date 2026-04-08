@@ -5,35 +5,29 @@ import core.ApiAssertions;
 import core.BaseApiTest;
 import core.RetryExecutor;
 import core.TestDataLoader;
-import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
-import io.qameta.allure.Severity;
-import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import io.qameta.allure.TmsLink;
 import io.restassured.response.Response;
 import models.BreedImagesResponse;
 import models.BreedListResponse;
 import models.RandomImageResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("200 / contrato")
+@Feature("Happy path")
 @Owner("alexxandrelopesqa")
 public class DogApiPositiveTests extends BaseApiTest {
 
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("GET /breeds/list/all")
-    @Severity(SeverityLevel.CRITICAL)
-    @Description("200, schema e mapa message com raças.")
-    @TmsLink("breed")
-    @DisplayName("Retorna mapa de raças com status success")
+    @Story("/breeds/list/all")
+    @DisplayName("Lista completa de raças")
     void shouldReturnBreedsListWithExpectedStructure() {
         String endpoint = "/breeds/list/all";
         AllureReportManager.attachExecutionContext("positive-list-all-breeds", endpoint);
@@ -46,16 +40,13 @@ public class DogApiPositiveTests extends BaseApiTest {
         ApiAssertions.assertSchema(response, "schemas/breeds-list-all-schema.json");
         ApiAssertions.assertMandatoryKeys(response, "success");
         ApiAssertions.assertBreedsListStructure(response);
-        org.junit.jupiter.api.Assertions.assertNotNull(body.getMessage(), "Desserializacao de message nao deve ser nula");
+        Assertions.assertNotNull(body.getMessage(), "campo message nulo");
     }
 
     @Test
     @Tag("regression")
-    @Story("GET /breed/{breed}/images")
-    @Severity(SeverityLevel.CRITICAL)
-    @Description("200 e lista de URLs para raça válida.")
-    @TmsLink("breed-list")
-    @DisplayName("Retorna lista de URLs válidas para raça existente")
+    @Story("/breed/{breed}/images")
+    @DisplayName("Imagens de uma raça válida")
     void shouldReturnImagesForExistingBreed() {
         String breed = TestDataLoader.validBreed();
         String endpoint = "/breed/" + breed + "/images";
@@ -69,17 +60,14 @@ public class DogApiPositiveTests extends BaseApiTest {
         ApiAssertions.assertSchema(response, "schemas/breed-images-success-schema.json");
         ApiAssertions.assertMandatoryKeys(response, "success");
         ApiAssertions.assertBreedImagesStructure(response, breed);
-        org.junit.jupiter.api.Assertions.assertFalse(body.getMessage().isEmpty(), "Desserializacao deve conter imagens");
+        Assertions.assertFalse(body.getMessage().isEmpty(), "lista de imagens vazia");
     }
 
     @Test
     @Tag("smoke")
     @Tag("regression")
-    @Story("GET /breeds/image/random")
-    @Severity(SeverityLevel.NORMAL)
-    @Description("200 e URL de imagem no message.")
-    @TmsLink("random")
-    @DisplayName("Retorna URL válida ao solicitar imagem randômica")
+    @Story("/breeds/image/random")
+    @DisplayName("Uma imagem aleatória")
     void shouldReturnValidRandomImage() {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("positive-random-image", endpoint);
@@ -92,6 +80,6 @@ public class DogApiPositiveTests extends BaseApiTest {
         ApiAssertions.assertSchema(response, "schemas/random-image-schema.json");
         ApiAssertions.assertMandatoryKeys(response, "success");
         ApiAssertions.assertRandomImageStructure(response);
-        org.junit.jupiter.api.Assertions.assertNotNull(body.getMessage(), "Desserializacao de URL random nao deve ser nula");
+        Assertions.assertNotNull(body.getMessage(), "URL nula");
     }
 }

@@ -28,7 +28,7 @@ public final class AllureReportManager {
             writeExecutor(outputDir);
             copyCategories(outputDir);
         } catch (IOException exception) {
-            throw new IllegalStateException("Nao foi possivel escrever em allure-results", exception);
+            throw new IllegalStateException("não consegui escrever em allure-results", exception);
         }
     }
 
@@ -131,7 +131,7 @@ public final class AllureReportManager {
         try (InputStream inputStream = AllureReportManager.class.getClassLoader()
             .getResourceAsStream("allure/categories.json")) {
             if (inputStream == null) {
-                throw new IllegalStateException("Arquivo allure/categories.json nao encontrado");
+                throw new IllegalStateException("falta allure/categories.json no classpath");
             }
             Files.copy(inputStream, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }

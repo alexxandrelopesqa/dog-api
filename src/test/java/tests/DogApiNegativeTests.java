@@ -5,34 +5,28 @@ import core.ApiAssertions;
 import core.BaseApiTest;
 import core.RetryExecutor;
 import core.TestDataLoader;
-import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
-import io.qameta.allure.Severity;
-import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import io.qameta.allure.TmsLink;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import java.util.Map;
 import models.ApiBaseResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("404 / payload")
+@Feature("Erros 404")
 @Owner("alexxandrelopesqa")
 public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("Raça inválida em /breed/{breed}/images")
-    @Severity(SeverityLevel.CRITICAL)
-    @Description("404, status error e mensagem sobre breed.")
-    @TmsLink("breed-list")
-    @DisplayName("Retorna status error para raça inválida")
+    @Story("/breed/{breed}/images inválido")
+    @DisplayName("404 para raça inexistente (images)")
     void shouldReturnErrorForInvalidBreed() {
         String invalidBreed = TestDataLoader.invalidBreed();
         String endpoint = "/breed/" + invalidBreed + "/images";
@@ -46,16 +40,13 @@ public class DogApiNegativeTests extends BaseApiTest {
         ApiAssertions.assertSchema(response, "schemas/breed-images-error-schema.json");
         ApiAssertions.assertMandatoryKeys(response, "error");
         ApiAssertions.assertErrorMessage(response, "breed");
-        org.junit.jupiter.api.Assertions.assertNotNull(body.getMessage(), "Desserializacao de erro nao deve ser nula");
+        Assertions.assertNotNull(body.getMessage(), "mensagem de erro nula");
     }
 
     @Test
     @Tag("regression")
-    @Story("Campos do JSON em /breeds/image/random")
-    @Severity(SeverityLevel.NORMAL)
-    @Description("status e message presentes e string.")
-    @TmsLink("random")
-    @DisplayName("Tipos básicos no payload do random")
+    @Story("/breeds/image/random — shape JSON")
+    @DisplayName("Random: status e message string")
     void shouldMatchRandomPayloadShape() {
         String endpoint = "/breeds/image/random";
         AllureReportManager.attachExecutionContext("random-payload-shape", endpoint);
@@ -67,18 +58,17 @@ public class DogApiNegativeTests extends BaseApiTest {
         ApiAssertions.assertHttpAndContentType(response, 200);
         ApiAssertions.assertMandatoryKeys(response, "success");
 
-        org.junit.jupiter.api.Assertions.assertNotNull(payload, "Payload nao deve ser nulo");
-        org.junit.jupiter.api.Assertions.assertTrue(payload.containsKey("status"), "Campo status deve existir");
-        org.junit.jupiter.api.Assertions.assertTrue(payload.containsKey("message"), "Campo message deve existir");
-        org.junit.jupiter.api.Assertions.assertInstanceOf(String.class, payload.get("status"), "Campo status deve ser string");
-        org.junit.jupiter.api.Assertions.assertInstanceOf(String.class, payload.get("message"), "Campo message deve ser string");
+        Assertions.assertNotNull(payload, "payload nulo");
+        Assertions.assertTrue(payload.containsKey("status"));
+        Assertions.assertTrue(payload.containsKey("message"));
+        Assertions.assertInstanceOf(String.class, payload.get("status"));
+        Assertions.assertInstanceOf(String.class, payload.get("message"));
     }
 
     @Test
     @Tag("regression")
-    @Story("404 GET /breed/{breed}/list")
-    @Severity(SeverityLevel.NORMAL)
-    @DisplayName("Lista de sub-racas 404 para raca invalida")
+    @Story("/breed/{breed}/list inválido")
+    @DisplayName("404 na lista de sub-raças com raça inválida")
     void shouldReturn404ForInvalidBreedList() {
         String invalidBreed = TestDataLoader.invalidBreed();
         String endpoint = "/breed/" + invalidBreed + "/list";
@@ -94,9 +84,8 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("404 random raca invalida")
-    @Severity(SeverityLevel.NORMAL)
-    @DisplayName("Random por raca 404 quando raca nao existe")
+    @Story("/breed/{breed}/images/random inválido")
+    @DisplayName("404 no random por raça inexistente")
     void shouldReturn404ForInvalidBreedRandom() {
         String invalidBreed = TestDataLoader.invalidBreed();
         String endpoint = "/breed/" + invalidBreed + "/images/random";
@@ -112,8 +101,8 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("404 random N raca invalida")
-    @DisplayName("Random N por raca 404 quando raca nao existe")
+    @Story("/breed/{breed}/images/random/N inválido")
+    @DisplayName("404 no random N com raça inexistente")
     void shouldReturn404ForInvalidBreedRandomN() {
         String invalidBreed = TestDataLoader.invalidBreed();
         String endpoint = "/breed/" + invalidBreed + "/images/random/3";
@@ -129,8 +118,8 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("404 sub-raca invalida /images")
-    @DisplayName("Imagens 404 para sub-raca inexistente")
+    @Story("sub-raça inválida /images")
+    @DisplayName("404 em imagens com sub-raça inexistente")
     void shouldReturn404ForInvalidSubBreedImages() {
         String breed = TestDataLoader.validBreed();
         String badSub = TestDataLoader.invalidSubBreed();
@@ -147,8 +136,8 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("404 sub-raca invalida /random")
-    @DisplayName("Random sub 404 quando sub nao existe")
+    @Story("sub-raça inválida /random")
+    @DisplayName("404 no random de sub-raça inexistente")
     void shouldReturn404ForInvalidSubBreedRandom() {
         String breed = TestDataLoader.validBreed();
         String badSub = TestDataLoader.invalidSubBreed();
@@ -165,8 +154,8 @@ public class DogApiNegativeTests extends BaseApiTest {
 
     @Test
     @Tag("regression")
-    @Story("404 sub-raca invalida /random/N")
-    @DisplayName("Random N sub 404 quando sub nao existe")
+    @Story("sub-raça inválida /random/N")
+    @DisplayName("404 no random N com sub-raça inexistente")
     void shouldReturn404ForInvalidSubBreedRandomN() {
         String breed = TestDataLoader.validBreed();
         String badSub = TestDataLoader.invalidSubBreed();
