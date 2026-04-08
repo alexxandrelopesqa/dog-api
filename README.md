@@ -65,7 +65,9 @@ Abre `target/site/allure-maven-plugin/index.html`. Trends no site publicado usam
 
 Relatório: `https://alexxandrelopesqa.github.io/dog-api/` (tem de incluir `/dog-api/` no path).
 
-**Pages:** em **Settings → Pages → Build and deployment**, a fonte tem de ser **Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. Se estiver **GitHub Actions** como fonte, o site não usa o `index.html` que este repo envia para `gh-pages` — aí aparece página errada ou vazia. Depois de mudar, espera 1–2 minutos e atualiza com cache limpo (Ctrl+F5).
+**Pages:** em **Settings → Pages → Build and deployment** → **Deploy from a branch** → branch **`gh-pages`** (não `main`), pasta **`/` (root)**.
+
+Se escolheres **`main`**, o GitHub publica a raiz do repositório (README, `pom.xml`, pastas) — **não** é o relatório Allure. O CI grava o HTML do Allure só na branch **`gh-pages`**. Fonte **GitHub Actions** também não corresponde a este fluxo (push via `peaceiris`). Depois de mudar para `gh-pages`, espera 1–2 min e recarrega (Ctrl+F5).
 
 ## Jenkins
 
