@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("Outros endpoints")
+@Feature("Mais GETs")
 @Owner("alexxandrelopesqa")
 public class DogApiRegressionTests extends BaseApiTest {
 

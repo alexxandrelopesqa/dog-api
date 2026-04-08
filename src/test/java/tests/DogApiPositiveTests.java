@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("Happy path")
+@Feature("Positivos")
 @Owner("alexxandrelopesqa")
 public class DogApiPositiveTests extends BaseApiTest {
 

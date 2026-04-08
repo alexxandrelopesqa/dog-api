@@ -1,144 +1,76 @@
 # dog-api
 
-Automação de testes de API contra a [Dog API](https://dog.ceo/dog-api/documentation) — base `https://dog.ceo/api`.
+Testes automatizados contra a [Dog API](https://dog.ceo/dog-api/documentation) (`https://dog.ceo/api`).
 
 ![CI](https://github.com/alexxandrelopesqa/dog-api/actions/workflows/api-tests.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-17-blue)
 
 ## Requisitos
 
-- **JDK** 17+ (o Enforcer exige `[17,)`)
-- **Maven** 3.9+ (Enforcer; o wrapper `mvnw` já traz uma versão compatível)
-- Rede para a API pública e para o Maven
-- Opcional: Docker (imagem no `Dockerfile`), Jenkins (pipeline no `Jenkinsfile`)
+JDK 17+, Maven 3.9+ (o `pom` força isso com o Enforcer), rede. Opcional: Docker ou Jenkins se quiseres correr igual ao servidor.
 
-## Stack
+## Ferramentas
 
-| Componente | Uso |
-|------------|-----|
-| Java 17 | Linguagem |
-| Maven Wrapper | Build e `allure:report` |
-| JUnit 5 | `@Tag` smoke / regression |
-| Rest Assured + JSON Schema | Chamadas e contratos |
-| Allure | Relatório e anexos |
-| GitHub Actions | CI multi-OS + agregação + deploy `gh-pages` |
-| Dependabot | Atualizações Maven e Actions (semanal) |
+Java 17, Maven Wrapper, JUnit 5 com tags `smoke` e `regression`, Rest Assured e validação com JSON Schema, Allure para relatório. CI no GitHub Actions (ubuntu/windows/macos); Dependabot para dependências. Versões concretas no `pom.xml`.
 
-Versões principais estão no `pom.xml` (JUnit 5.10.x, Rest Assured 5.4.x, Allure 2.25.x, etc.).
-
-## O que os testes cobrem
+## Endpoints exercitados
 
 - `GET /breeds/list/all`
-- `GET /breeds/image/random` e `/breeds/image/random/{n}` (ex.: pedir 51 URLs → no máximo 50)
-- `GET /breed/{breed}/images`, `.../images/random`, `.../images/random/{n}`
-- `GET /breed/{breed}/list` (sub-raças; pode ser `[]`)
-- `GET /breed/{breed}/{sub}/images` e variantes `.../random` e `.../random/{n}`
-- Respostas **404** com raça ou sub-raça inválida
+- `GET /breeds/image/random` e `/breeds/image/random/{n}` (pedir 51 devolve no máximo 50 URLs)
+- `GET /breed/{breed}/images`, random e random com N
+- `GET /breed/{breed}/list` (lista de sub-raças; pode vir vazia)
+- `GET /breed/{breed}/{sub}/images` e variantes com random
+- Respostas 404 para raça ou sub-raça inválida
 
-Contratos em `src/test/resources/schemas/`. Retry só para **429**, **5xx** ou falha de rede (`core/RetryExecutor`).
+Schemas em `src/test/resources/schemas/`. Retry em 429, 5xx ou erro de rede — ver `core/RetryExecutor`.
 
-### Classes de teste
+Há três classes: `DogApiPositiveTests`, `DogApiNegativeTests`, `DogApiRegressionTests`. Com `./mvnw test -Pregression` são 20 testes; com `-Psmoke` só os marcados com `@Tag("smoke")`.
 
-| Ficheiro | Conteúdo |
-|----------|------------|
-| `DogApiPositiveTests` | Caminhos felizes (lista, imagens, random) |
-| `DogApiNegativeTests` | 404 e validações de erro / shape JSON |
-| `DogApiRegressionTests` | Random N, listas, sub-raças, teto de 50 URLs |
+## Pastas
 
-Com `-Pregression` são **20** casos. Com `-Psmoke` corre um subconjunto marcado com `@Tag("smoke")`.
-
-## Estrutura do projeto
-
-```text
-src/test/java/
-  core/       ConfigManager, RetryExecutor, ApiAssertions, AllureReportManager, …
-  client/     DogApiClient
-  models/     POJOs das respostas
-  tests/      Classes *Tests.java
-
-src/test/resources/
-  schemas/     JSON Schema
-  allure/      categories.json
-  testdata/    breeds.json (raças de exemplo)
+```
+src/test/java/   core, client, models, tests
+src/test/resources/   schemas, allure, testdata
 ```
 
-## Executar localmente
+## Correr
 
-Suite completa com perfil de regressão (recomendado):
+Regressão (o que costumo usar):
 
 ```bash
 ./mvnw clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
 ```
 
-Windows (PowerShell) — o `--%` evita que o PowerShell interprete `-P` e `-D`:
+PowerShell precisa de `--%` antes dos argumentos do Maven, senão o `-P` e os `-D` partem-se:
 
 ```powershell
 .\mvnw.cmd --% clean test -Pregression -Ddog.api.maxResponseTimeMs=5000
 ```
 
-Só smoke:
+Smoke: `./mvnw clean test -Psmoke`
 
-```bash
-./mvnw clean test -Psmoke
-```
+Um teste só: `./mvnw -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test`
 
-Um método:
+Propriedades úteis: `dog.api.baseUrl` (default `https://dog.ceo/api`), `dog.api.maxResponseTimeMs` (3000 no código, 5000 no CI), `dog.api.retryAttempts`, `dog.api.retryBackoffMs`. No CI/Jenkins também vai `-Dsurefire.rerunFailingTestsCount=1` para a aba Retries no Allure.
 
-```bash
-./mvnw -Dtest=DogApiPositiveTests#shouldReturnValidRandomImage test
-```
-
-### Propriedades do sistema (`-D`)
-
-| Propriedade | Default | Descrição |
-|-------------|---------|-----------|
-| `dog.api.baseUrl` | `https://dog.ceo/api` | Base da API |
-| `dog.api.maxResponseTimeMs` | `3000` | SLA de tempo de resposta nos asserts |
-| `dog.api.retryAttempts` | `3` | Tentativas em falhas transitórias |
-| `dog.api.retryBackoffMs` | `250` | Espera entre tentativas (ms) |
-
-No CI e no Jenkins usa-se `maxResponseTimeMs=5000` e `surefire.rerunFailingTestsCount=1` (aba Retries no Allure).
-
-## Relatório Allure (local)
-
-```bash
-./mvnw allure:report
-```
-
-Abrir `target/site/allure-maven-plugin/index.html`.
+Relatório local: `./mvnw allure:report` e abre `target/site/allure-maven-plugin/index.html`.
 
 ## GitHub Actions
 
-Ficheiro: `.github/workflows/api-tests.yml`.
+Ficheiro `.github/workflows/api-tests.yml` — testes em três SOs, artefactos de Surefire e Allure; noutro job junta-se o resultado do Ubuntu, gera o HTML do Allure e empurra para a branch **`gh-pages`** (não `main`). Em PRs não há publicação no Pages.
 
-1. **Job `test`:** matriz `ubuntu-latest`, `windows-latest`, `macos-latest`; `clean test -Pregression` com os mesmos `-D` que acima; upload de `surefire-reports` e `allure-results` por SO.
-2. **Job `allure-aggregate`:** descarrega só `allure-results-ubuntu-latest`, opcionalmente restaura `history` a partir da branch `gh-pages`, corre `mvn allure:report`, monta `public/` (com `.nojekyll` e validação de `index.html`) e faz push com `peaceiris/actions-gh-pages` para **`gh-pages`**.
+Relatório online: `https://alexxandrelopesqa.github.io/dog-api/`
 
-Em **pull requests** não há push para Pages — só geração de relatório e artefactos.
+Em **Settings → Pages** a fonte tem de ser **branch `gh-pages`**, pasta **root**. Se estiver em `main`, vês o repositório em vez do relatório.
 
-### Site público do relatório
+## Jenkins e Docker
 
-URL: `https://alexxandrelopesqa.github.io/dog-api/`
+`Jenkinsfile`: checkout, testes com timeout 5000 ms no assert, `allure:report`, arquivo de `target/`.
 
-**Settings → Pages → Build and deployment:** tem de ser **Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. Se escolheres **`main`**, o Pages mostra o código do repositório, **não** o Allure. A fonte **GitHub Actions** (deploy por artefacto) **não** corresponde a este fluxo.
+`Dockerfile`: imagem Maven + Temurin 17; `docker build -t dog-api-tests .` e `docker run --rm dog-api-tests` corre testes e `allure:report`.
 
-Tendências no Allure usam a pasta `history/` copiada do deploy anterior em `gh-pages`.
+## Se algo falhar
 
-## Jenkins
+Latência da API: subir `dog.api.maxResponseTimeMs`. Pages a mostrar código: rever branch `gh-pages`. Primeira vez sem histórico no Allure: normal. No Windows do Actions se faltar artefacto, o `mvnw.cmd` já vai com `--%`.
 
-O `Jenkinsfile` faz checkout, `clean test -Pregression` com timeout de resposta 5000 ms, `allure:report` e arquivo de `target/` (Surefire, resultados Allure, HTML). Agente com JDK 17 e acesso à rede.
-
-## Docker
-
-`docker build -t dog-api-tests .` e `docker run --rm dog-api-tests` executam testes + `allure:report` dentro do contentor (Maven 3.9 + Temurin 17 na imagem base).
-
-## Problemas frequentes
-
-| Situação | O que fazer |
-|----------|-------------|
-| Falhas por latência da API | Aumentar `-Ddog.api.maxResponseTimeMs=5000` |
-| Página do relatório errada no GitHub | Confirmar Pages em **`gh-pages`**, não `main` |
-| Sem histórico no Allure | Normal na primeira publicação; nas seguintes o `history` é restaurado |
-| Windows no CI sem artefactos | O workflow já usa `mvnw.cmd --%` para passar `-P`/`-D` ao Maven |
-
-A API é externa: indisponibilidade ou flakiness são esperáveis.
+API pública — às vezes falha ou demora.

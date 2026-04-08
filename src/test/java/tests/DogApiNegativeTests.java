@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("Dog API")
-@Feature("Erros 404")
+@Feature("404 e negativos")
 @Owner("alexxandrelopesqa")
 public class DogApiNegativeTests extends BaseApiTest {
 
