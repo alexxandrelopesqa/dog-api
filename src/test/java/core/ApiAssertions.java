@@ -11,6 +11,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 
 public final class ApiAssertions {
@@ -97,6 +98,49 @@ public final class ApiAssertions {
             assertTrue(
                 message.toLowerCase().contains(expectedMessageFragment.toLowerCase()),
                 "Mensagem de erro deve mencionar '" + expectedMessageFragment + "'"
+            );
+        });
+    }
+
+    public static void assertMessageUrlArray(Response response, int minSize, Integer maxSize) {
+        Allure.step("Lista message: tamanho e URLs", () -> {
+            List<String> urls = response.jsonPath().getList("message");
+            assertNotNull(urls, "message deve ser lista");
+            assertTrue(urls.size() >= minSize, "Lista com menos itens que o minimo: " + minSize);
+            if (maxSize != null) {
+                assertTrue(urls.size() <= maxSize, "Lista com mais itens que o maximo " + maxSize + ": " + urls.size());
+            }
+            for (String url : urls) {
+                assertNotNull(url);
+                assertTrue(url.startsWith("https://") || url.startsWith("http://"), "URL invalida: " + url);
+                assertTrue(
+                    url.contains("images.dog.ceo"),
+                    "URL deveria ser do CDN dog.ceo: " + url
+                );
+            }
+        });
+    }
+
+    public static void assertSubBreedListContains(Response response, String... expectedSubBreeds) {
+        Allure.step("Sub-racas esperadas na lista", () -> {
+            List<String> subs = response.jsonPath().getList("message");
+            assertNotNull(subs, "message deve ser lista");
+            for (String expected : expectedSubBreeds) {
+                boolean found = subs.stream().anyMatch(s -> s.equalsIgnoreCase(expected));
+                assertTrue(found, "Lista deveria conter sub-raca '" + expected + "': " + subs);
+            }
+        });
+    }
+
+    public static void assertSubBreedImageUrls(Response response, String breed, String sub) {
+        Allure.step("URLs da sub-raca " + breed + "/" + sub, () -> {
+            List<String> images = response.jsonPath().getList("message");
+            assertNotNull(images, "Lista de imagens nao pode ser nula");
+            assertFalse(images.isEmpty(), "Lista de imagens nao pode estar vazia");
+            String first = images.get(0).toLowerCase();
+            assertTrue(
+                Stream.of(breed, sub).anyMatch(part -> first.contains(part.toLowerCase())),
+                "URL deveria mencionar raca ou sub-raca: " + first
             );
         });
     }

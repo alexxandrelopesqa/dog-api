@@ -20,6 +20,18 @@ public final class TestDataLoader {
         return readNode("/testdata/breeds.json").path("invalidBreed").asText("invalidbreed");
     }
 
+    public static String validSubBreed() {
+        return readNode("/testdata/breeds.json").path("validSubBreed").asText("afghan");
+    }
+
+    public static String breedWithoutSubBreeds() {
+        return readNode("/testdata/breeds.json").path("breedWithoutSubBreeds").asText("beagle");
+    }
+
+    public static String invalidSubBreed() {
+        return readNode("/testdata/breeds.json").path("invalidSubBreed").asText("notasubbreedxyz");
+    }
+
     private static JsonNode readNode(String classpathFile) {
         try (InputStream inputStream = TestDataLoader.class.getResourceAsStream(classpathFile)) {
             if (inputStream == null) {

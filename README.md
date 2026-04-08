@@ -8,10 +8,13 @@ Testes de API contra a [Dog API](https://dog.ceo/dog-api/documentation) (`https:
 ## O que cobre
 
 - `GET /breeds/list/all`
-- `GET /breed/{breed}/images`
-- `GET /breeds/image/random`
+- `GET /breeds/image/random` e `/breeds/image/random/{n}` (inclui teto de 50)
+- `GET /breed/{breed}/images`, `.../images/random`, `.../images/random/{n}`
+- `GET /breed/{breed}/list` (sub-racas; `[]` quando nao ha)
+- `GET /breed/{breed}/{sub}/images` e variantes `.../random` e `.../random/{n}`
+- 404 para raca/sub invalidas nos paths acima
 
-Contratos em JSON Schema (`src/test/resources/schemas/`), asserts em código e retry em 429, 5xx ou falha de rede.
+Contratos em JSON Schema (`src/test/resources/schemas/`), asserts em código e retry em 429, 5xx ou falha de rede. Casos extra em `DogApiRegressionTests`.
 
 ## Stack
 

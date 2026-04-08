@@ -1,4 +1,7 @@
 {
   "validBreed": "hound",
-  "invalidBreed": "invalidbreed"
+  "invalidBreed": "invalidbreed",
+  "validSubBreed": "afghan",
+  "breedWithoutSubBreeds": "beagle",
+  "invalidSubBreed": "notasubbreedxyz"
 }
