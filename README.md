@@ -57,7 +57,11 @@ Relatório local: `./mvnw allure:report` e abre `target/site/allure-maven-plugin
 
 ## GitHub Actions
 
-Ficheiro `.github/workflows/api-tests.yml` — testes em três SOs, artefactos de Surefire e Allure; noutro job junta-se o resultado do Ubuntu, gera o HTML do Allure e empurra para a branch **`gh-pages`** (não `main`). Em PRs não há publicação no Pages.
+Ficheiro `.github/workflows/api-tests.yml` — testes em três SOs com artefactos de Surefire e Allure por SO.
+
+O job que gera o HTML e publica no Pages **só descarrega `allure-results-ubuntu-latest`**. Assim o relatório online não triplica os mesmos 20 testes (Windows e macOS continuam nos artefactos da matriz para comparar se precisares).
+
+Em PRs não há push para `gh-pages`.
 
 Relatório online: `https://alexxandrelopesqa.github.io/dog-api/`
 

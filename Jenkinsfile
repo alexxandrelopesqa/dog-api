@@ -20,7 +20,7 @@ pipeline {
                         sh 'chmod +x mvnw'
                         sh "./mvnw --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=${DOG_API_MAX_RESPONSE_TIME_MS} -Dsurefire.rerunFailingTestsCount=1"
                     } else {
-                        bat ".\\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=${DOG_API_MAX_RESPONSE_TIME_MS} -Dsurefire.rerunFailingTestsCount=1"
+                        bat "call .\\mvnw.cmd --batch-mode --no-transfer-progress clean test -Pregression -Ddog.api.maxResponseTimeMs=${env.DOG_API_MAX_RESPONSE_TIME_MS} -Dsurefire.rerunFailingTestsCount=1"
                     }
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
                     if (isUnix()) {
                         sh './mvnw --batch-mode --no-transfer-progress allure:report'
                     } else {
-                        bat '.\\mvnw.cmd --batch-mode --no-transfer-progress allure:report'
+                        bat 'call .\\mvnw.cmd --batch-mode --no-transfer-progress allure:report'
                     }
                 }
             }
