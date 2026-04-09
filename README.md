@@ -71,7 +71,7 @@ Em **Settings → Pages** a fonte tem de ser **branch `gh-pages`**, pasta **root
 
 ## Git
 
-Uma vez por clone, para activar o hook que remove linhas `Made-with: …` das mensagens de commit (se o editor as acrescentar):
+Uma vez por clone, para activar o hook que limpa rodapés automáticos que alguns editores acrescentam à mensagem de commit:
 
 ```bash
 git config core.hooksPath .githooks
