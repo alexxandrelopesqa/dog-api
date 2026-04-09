@@ -59,7 +59,7 @@ Relatório local: `./mvnw allure:report` e abre `target/site/allure-maven-plugin
 
 Ficheiro `.github/workflows/api-tests.yml` — testes em três SOs com artefactos de Surefire e Allure por SO.
 
-Disparo **automático todos os dias às 20:00 UTC** (`schedule` com cron). Em Portugal continental isso é 20:00 no inverno (UTC+0) e 21:00 no horário de verão (UTC+1); ajusta o cron no workflow se quiseres outra hora ou fuso fixo.
+Disparo **automático três vezes por dia às 08:00, 12:00 e 18:00 UTC** (`schedule` com cron). O GitHub só agenda em UTC: em Portugal continental, no inverno (UTC+0) coincide com 8h/12h/18h locais; no horário de verão (UTC+1) corresponde a 9h/13h/19h em Lisboa. Ajusta o cron no workflow se precisares de outras horas.
 
 O job que gera o HTML e publica no Pages **só descarrega `allure-results-ubuntu-latest`**. Assim o relatório online não triplica os mesmos 20 testes (Windows e macOS continuam nos artefactos da matriz para comparar se precisares).
 
