@@ -1,0 +1,1 @@
+[{"values":["5000"],"name":"maxResponseTimeMs"},{"values":["https://dog.ceo/api"],"name":"baseUrl"},{"values":["250"],"name":"retryBackoffMs"},{"values":["17.0.18"],"name":"javaVersion"},{"values":["amd64"],"name":"osArch"},{"values":["Linux"],"name":"osName"},{"values":["3"],"name":"retryAttempts"}]
