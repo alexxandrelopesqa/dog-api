@@ -1,0 +1,8 @@
+{
+  "scenario": "brd-random-n",
+  "endpoint": "/breed/hound/images/random/5",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
