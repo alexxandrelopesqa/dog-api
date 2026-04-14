@@ -1,3 +1,0 @@
-method=GET
-endpoint=/breed/hound/images/random/5
-baseUrl=https://dog.ceo/api
