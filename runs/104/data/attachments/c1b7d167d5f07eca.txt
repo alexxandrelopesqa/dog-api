@@ -1,0 +1,3 @@
+method=GET
+endpoint=/breed/hound/images
+baseUrl=https://dog.ceo/api
