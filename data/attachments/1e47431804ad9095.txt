@@ -1,0 +1,26 @@
+statusCode=200
+statusLine=HTTP/1.1 200 OK
+contentType=application/json
+responseTimeMs=118
+headers=Date=Thu, 04 Jun 2026 17:37:37 GMT
+Content-Type=application/json
+Content-Length=3314
+Connection=keep-alive
+Server=cloudflare
+X-Powered-By=PHP/8.3.29
+Access-Control-Allow-Origin=*
+Content-Encoding=gzip
+Via=1.1 varnish (Varnish/6.3), 1.1 varnish (Varnish/6.3)
+Cache-Control=max-age=1800
+X-Cache-Age=14642
+X-Cache-Hits=26
+X-Cache=HIT
+Accept-Ranges=bytes
+Age=0
+Vary=Accept-Encoding
+Nel={"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+cf-cache-status=DYNAMIC
+Speculation-Rules="/cdn-cgi/speculation"
+Report-To={"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=noCvwtX8Qa8cVl6Ws%2BEqryv%2FSpb1BeLs9UG5qnbb5OtqXs8pv72DTj4AQOZsAjxlk9Y%2FE%2BehDLNIoFs%2FZvVwy5MuD1VzjflGDvbdazgRvPoy2u5Bo40sk6M2"}]}
+CF-RAY=a068b4df2942b296-IAD
+alt-svc=h3=":443"; ma=86400
