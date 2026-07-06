@@ -1,3 +1,0 @@
-method=GET
-endpoint=/breed/invalidbreed/list
-baseUrl=https://dog.ceo/api

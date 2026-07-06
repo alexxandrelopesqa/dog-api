@@ -1,3 +1,0 @@
-method=GET
-endpoint=/breed/hound/list
-baseUrl=https://dog.ceo/api
