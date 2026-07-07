@@ -1,0 +1,13 @@
+statusCode=404
+statusLine=HTTP/1.1 404 Not Found
+contentType=text/html; charset=iso-8859-1
+responseTimeMs=334
+headers=Date=Tue, 07 Jul 2026 22:01:56 GMT
+Server=Apache
+Content-Length=196
+Content-Type=text/html; charset=iso-8859-1
+Via=1.1 varnish (Varnish/6.3), 1.1 varnish (Varnish/6.3)
+X-Cache-Hits=594
+X-Cache=HIT
+Age=72
+Connection=keep-alive
