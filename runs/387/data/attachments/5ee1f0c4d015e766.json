@@ -1,0 +1,8 @@
+{
+  "scenario": "rnd-global-cap",
+  "endpoint": "/breeds/image/random/51",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
