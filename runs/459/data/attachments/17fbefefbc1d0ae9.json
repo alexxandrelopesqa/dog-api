@@ -1,0 +1,8 @@
+{
+  "scenario": "neg-breed-random-n",
+  "endpoint": "/breed/invalidbreed/images/random/3",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
