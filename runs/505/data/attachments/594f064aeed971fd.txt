@@ -1,0 +1,20 @@
+statusCode=404
+statusLine=HTTP/1.1 404 Not Found
+contentType=application/json
+responseTimeMs=196
+headers=Date=Sat, 29 Aug 2026 15:21:48 GMT
+Content-Type=application/json
+Transfer-Encoding=chunked
+Connection=keep-alive
+Server=cloudflare
+Nel={"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+cache-control=no-store
+Access-Control-Allow-Origin=*
+Access-Control-Allow-Methods=GET, OPTIONS, HEAD
+Access-Control-Expose-Headers=*
+cf-cache-status=DYNAMIC
+Speculation-Rules="/cdn-cgi/speculation"
+Report-To={"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=yB4zU9iiviOxbG94zF2BJkcItmd%2FGzrLK4nAXk7JbQT3AqLXY6l0OSesrbsfOhL%2F%2BzJUlcIb7w9tGzlLHQ5m2Uc%2FO29h3bDabAgwiiwCEpzoNJMzU2FLeFlx"}]}
+Content-Encoding=gzip
+CF-RAY=a32c8c2f9ec1fa1e-SJC
+alt-svc=h3=":443"; ma=86400
