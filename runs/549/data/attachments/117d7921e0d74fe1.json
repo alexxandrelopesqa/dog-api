@@ -1,0 +1,8 @@
+{
+  "scenario": "neg-breed-list",
+  "endpoint": "/breed/invalidbreed/list",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
