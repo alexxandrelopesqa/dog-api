@@ -1,0 +1,3 @@
+method=GET
+endpoint=/breed/beagle/list
+baseUrl=https://dog.ceo/api
