@@ -1,0 +1,8 @@
+{
+  "scenario": "positive-list-all-breeds",
+  "endpoint": "/breeds/list/all",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
