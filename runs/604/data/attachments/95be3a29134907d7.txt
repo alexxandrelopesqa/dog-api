@@ -1,0 +1,3 @@
+method=GET
+endpoint=/breed/hound/afghan/images/random
+baseUrl=https://dog.ceo/api
