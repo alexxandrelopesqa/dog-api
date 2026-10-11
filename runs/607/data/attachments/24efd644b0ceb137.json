@@ -1,0 +1,8 @@
+{
+  "scenario": "neg-sub-images",
+  "endpoint": "/breed/hound/notasubbreedxyz/images",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
