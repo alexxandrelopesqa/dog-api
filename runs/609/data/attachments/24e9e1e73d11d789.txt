@@ -1,0 +1,3 @@
+method=GET
+endpoint=/breed/invalidbreed/images/random
+baseUrl=https://dog.ceo/api

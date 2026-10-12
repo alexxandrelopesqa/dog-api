@@ -1,0 +1,8 @@
+{
+  "scenario": "sub-list-empty",
+  "endpoint": "/breed/beagle/list",
+  "baseUrl": "https://dog.ceo/api",
+  "maxResponseTimeMs": "5000",
+  "retryAttempts": "3",
+  "retryBackoffMs": "250"
+}
